@@ -8,6 +8,8 @@ class ChaHai:
     def __init__(self, position, sprite_loader):
         self.position = position
         self.tea_data = None
+        self.pour_count = 0  # Track how many cups have been filled
+        self.max_pours = 8  # Can fill 8 cups
         self.width = 90
         self.height = 90
         self.sprite_loader = sprite_loader
@@ -15,14 +17,20 @@ class ChaHai:
     def pour_from_kettle(self, tea_data):
         if self.tea_data is None:
             self.tea_data = tea_data
+            self.pour_count = 0  # Reset pour count
             return True
         return False
     
     def pour_to_cup(self):
-        if self.tea_data:
-            tea_data = self.tea_data
-            self.tea_data = None
-            return tea_data
+        if self.tea_data and self.pour_count < self.max_pours:
+            self.pour_count += 1
+            # Clear tea_data only after last pour
+            if self.pour_count >= self.max_pours:
+                tea_data = self.tea_data
+                self.tea_data = None
+                self.pour_count = 0
+                return tea_data
+            return self.tea_data  # Return without clearing
         return None
     
     def draw(self, screen):
@@ -39,7 +47,8 @@ class ChaHai:
             # Label when filled
             if self.tea_data:
                 font = pygame.font.Font(None, 14)
-                label = font.render("Pour→", True, (50, 50, 50))
+                remaining = self.max_pours - self.pour_count
+                label = font.render(f"Pour→ ({remaining})", True, (50, 50, 50))
                 label_rect = label.get_rect(center=(x, y + 50))
                 bg_rect = label_rect.inflate(4, 2)
                 pygame.draw.rect(screen, (255, 255, 255), bg_rect, border_radius=3)

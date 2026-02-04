@@ -131,12 +131,16 @@ class GameScene:
             
             # Check for dragging tea kettle (to pour to cha hai)
             if self.tea_kettle.state == TeaKettle.STATE_READY and self.tea_kettle.contains_point(mouse_pos):
-                self.dragging_object = "tea_kettle_pour"
+                self.dragging_object = self.tea_kettle
+                self.drag_offset = (self.tea_kettle.position[0] - mouse_pos[0], 
+                                   self.tea_kettle.position[1] - mouse_pos[1])
                 return None
             
             # Check for dragging cha hai (to pour to cups)
             if self.cha_hai.tea_data and self.cha_hai.contains_point(mouse_pos):
-                self.dragging_object = "cha_hai_pour"
+                self.dragging_object = self.cha_hai
+                self.drag_offset = (self.cha_hai.position[0] - mouse_pos[0], 
+                                   self.cha_hai.position[1] - mouse_pos[1])
                 return None
             
             # Check for dragging filled cups
@@ -162,6 +166,8 @@ class GameScene:
                 elif isinstance(self.dragging_object, TeaCup):
                     self.dragging_object.position[0] = mouse_pos[0] + self.drag_offset[0]
                     self.dragging_object.position[1] = mouse_pos[1] + self.drag_offset[1]
+                
+                # Tea kettle and cha hai don't move during pour, just track mouse
         
         elif event.type == pygame.MOUSEBUTTONUP:
             if self.dragging_object:
@@ -182,14 +188,14 @@ class GameScene:
                     self.dragging_object.dragging = False
                 
                 # Handle tea kettle pour to cha hai
-                elif self.dragging_object == "tea_kettle_pour":
+                elif self.dragging_object == self.tea_kettle:
                     if self.cha_hai.contains_point(mouse_pos):
                         tea_data = self.tea_kettle.pour_to_cha_hai()
                         if tea_data:
                             self.cha_hai.pour_from_kettle(tea_data)
                 
                 # Handle cha hai pour to cups
-                elif self.dragging_object == "cha_hai_pour":
+                elif self.dragging_object == self.cha_hai:
                     for cup in self.tea_cups:
                         if cup.contains_point(mouse_pos) and not cup.tea_data:
                             tea_data = self.cha_hai.pour_to_cup()
@@ -255,9 +261,10 @@ class GameScene:
         drawer_rect = drawer_label.get_rect(center=(500, 30))
         self.screen.blit(drawer_label, drawer_rect)
         
-        # Draw tea disks
+        # Draw tea disks (except if being dragged)
         for disk in self.tea_disks:
-            disk.draw(self.screen)
+            if disk != self.dragging_object:
+                disk.draw(self.screen)
         
         # Draw cha ban area
         pygame.draw.rect(self.screen, (160, 120, 80), (30, 140, 240, 480), border_radius=10)
@@ -267,12 +274,15 @@ class GameScene:
         cha_ban_rect = cha_ban_label.get_rect(center=(150, 150))
         self.screen.blit(cha_ban_label, cha_ban_rect)
         
-        # Draw equipment on cha ban
-        self.hot_water_kettle.draw(self.screen)
+        # Draw equipment on cha ban (except if being dragged)
+        if self.hot_water_kettle != self.dragging_object:
+            self.hot_water_kettle.draw(self.screen)
+        # Always draw tea kettle and cha hai (they stay in place during pour)
         self.tea_kettle.draw(self.screen)
         self.cha_hai.draw(self.screen)
         for cup in self.tea_cups:
-            cup.draw(self.screen)
+            if cup != self.dragging_object:
+                cup.draw(self.screen)
         
         # Draw cat area label
         cat_font = pygame.font.Font(None, 22)
@@ -321,3 +331,25 @@ class GameScene:
             inst_text = inst_font.render(instruction, True, (100, 70, 50))
             inst_rect = inst_text.get_rect(topleft=(300, 520 + i * 14))
             self.screen.blit(inst_text, inst_rect)
+        
+        # Draw dragged object last (on top of everything)
+        if self.dragging_object:
+            if isinstance(self.dragging_object, (TeaDisk, HotWaterKettle, TeaCup)):
+                self.dragging_object.draw(self.screen)
+            
+            # Draw pour animation for tea kettle and cha hai
+            elif self.dragging_object == self.tea_kettle:
+                mouse_pos = pygame.mouse.get_pos()
+                # Draw dotted line from kettle to cursor
+                start_pos = self.tea_kettle.position
+                pygame.draw.line(self.screen, (200, 150, 100), start_pos, mouse_pos, 3)
+                # Draw arrow at cursor
+                pygame.draw.circle(self.screen, (200, 150, 100), mouse_pos, 5)
+                
+            elif self.dragging_object == self.cha_hai:
+                mouse_pos = pygame.mouse.get_pos()
+                # Draw dotted line from cha hai to cursor
+                start_pos = self.cha_hai.position
+                pygame.draw.line(self.screen, (150, 200, 100), start_pos, mouse_pos, 3)
+                # Draw arrow at cursor
+                pygame.draw.circle(self.screen, (150, 200, 100), mouse_pos, 5)

@@ -14,7 +14,7 @@ class TeaKettle:
     def __init__(self, position, sprite_loader):
         self.position = position
         self.state = self.STATE_EMPTY
-        self.tea_data: None | dict[Any] = None
+        self.tea_data: None | dict[Any, Any] = None
         self.brew_timer = 0
         self.brew_duration = 0
         self.width = 120
@@ -31,7 +31,7 @@ class TeaKettle:
     def add_water(self):
         if self.state == self.STATE_HAS_TEA:
             self.state = self.STATE_BREWING
-            self.brew_duration = self.tea_data['brew_time']  # Keep in seconds
+            self.brew_duration = self.tea_data['brew_time'] if self.tea_data is not None else 0  # Keep in seconds
             self.brew_timer = 0
             return True
         return False
