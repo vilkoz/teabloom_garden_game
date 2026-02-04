@@ -118,78 +118,114 @@ tea_garden_cats/
 ├── game/
 │   ├── __init__.py
 │   ├── game_state.py      # Core game state management
+│   ├── sprite_loader.py   # Sprite loading system with grid extraction
 │   ├── scenes/
 │   │   ├── menu_scene.py  # Main menu
-│   │   ├── game_scene.py  # Main gameplay
-│   │   └── shop_scene.py  # Unlock shop
+│   │   ├── game_scene.py  # Main gameplay (tea ceremony)
+│   │   └── stats_scene.py # Statistics/achievements
+│   ├── tea_objects/       # Tea ceremony equipment module
+│   │   ├── __init__.py
+│   │   ├── tea_disk.py    # Draggable tea selection
+│   │   ├── tea_kettle.py  # Gaiwan for brewing
+│   │   ├── hot_water_kettle.py  # Water source
+│   │   ├── cha_hai.py     # Fairness cup
+│   │   ├── tea_cup.py     # Small serving cups
+│   │   └── cat_visitor.py # Cat visitors with AI
 │   ├── entities/
-│   │   ├── cat.py         # Cat class
-│   │   └── tea.py         # Tea class
+│   │   └── button.py      # UI button component
 │   └── ui/
-│       ├── button.py      # UI button component
-│       ├── text.py        # Text rendering
-│       └── progress_bar.py
+│       └── button.py      # UI elements
 ├── assets/
-│   ├── images/
-│   │   ├── cats/          # Cat sprites
-│   │   ├── teas/          # Tea cup sprites
-│   │   ├── backgrounds/   # Garden backgrounds
-│   │   └── ui/            # UI elements
-│   ├── sounds/
-│   │   ├── music/         # Background music
-│   │   └── sfx/           # Sound effects
-│   └── fonts/
-│       └── main_font.ttf
+│   └── images/
+│       └── grids/         # DALL-E generated sprite grids
 ├── data/
-│   ├── cats_data.json     # Cat definitions
-│   ├── teas_data.json     # Tea definitions
+│   ├── cats_data.json     # Cat definitions (6 cats)
+│   ├── teas_data.json     # Tea definitions (8 teas)
 │   └── save_data.json     # Player progress
+├── documents/
+│   ├── GAME_DESIGN.md     # This document
+│   ├── GAME_SCENE_DESIGN.md  # Scene layouts
+│   ├── IMAGE_PROMPTS.md   # DALL-E prompts
+│   └── QUICK_IMAGE_GUIDE.md  # Sprite generation guide
+├── generate_cat_image.py  # DALL-E sprite generator
 ├── pyproject.toml
 └── README.md
 ```
 
-### Key Classes
+### Key Classes (Actual Implementation)
 
 ```python
-# Cat class
-class Cat:
-    - name: str
-    - sprite: pygame.Surface
-    - favorite_tea: str
-    - position: tuple
-    - state: str (waiting, happy, disappointed, leaving)
-    - wait_timer: float
+# CatVisitor class (tea_objects/cat_visitor.py)
+class CatVisitor:
+    - cat_data: dict
+    - position: list
+    - state: str (arriving, waiting, happy, disappointed, leaving)
+    - patience: float (0-100)
+    - waiting_time: float
+    - served: bool
+    - happiness: int
+    - animation_timer: float
+    - sprite_loader: SpriteLoader
     
-    + arrive()
-    + request_tea()
-    + receive_tea(tea_type)
-    + leave()
-    + give_hearts()
+    + update(dt)
+    + receive_tea(tea_id) -> dict
+    + can_pet() -> bool
+    + pet() -> int
+    + draw(screen)
+    + is_off_screen() -> bool
 
-# Tea class
-class Tea:
-    - name: str
-    - brew_time: float
-    - heart_value: int
-    - sprite: pygame.Surface
-    - is_brewing: bool
+# TeaKettle class (tea_objects/tea_kettle.py)
+class TeaKettle:
+    - position: tuple
+    - state: str (empty, has_tea, brewing, ready)
+    - tea_data: dict
+    - brew_timer: float
+    - brew_duration: float
+    - sprite_loader: SpriteLoader
     
-    + start_brew()
-    + update_brew(dt)
-    + serve()
+    + add_tea(tea_data) -> bool
+    + add_water() -> bool
+    + update(dt)
+    + pour_to_cha_hai() -> dict
+    + get_brew_progress() -> float
+    + draw(screen)
+
+# TeaDisk class (tea_objects/tea_disk.py)
+class TeaDisk:
+    - tea_data: dict
+    - position: list
+    - dragging: bool
+    - radius: int
+    - sprite_loader: SpriteLoader
+    
+    + draw(screen)
+    + contains_point(point) -> bool
+    + snap_back()
+
+# SpriteLoader class (sprite_loader.py)
+class SpriteLoader:
+    - sprite_cache: dict
+    - grid_size: tuple
+    
+    + load_grid(name, variants, grid_layout)
+    + get_sprite(entity_name, variant) -> Surface
+    + _remove_black_background(surface) -> Surface
+    + _create_fallback_sprite(name, variant, size) -> Surface
 
 # GameState class
 class GameState:
     - hearts: int
-    - unlocked_teas: list
-    - unlocked_cats: list
-    - statistics: dict
+    - teas_served: int
+    - cats_satisfied: int
     - current_combo: int
+    - best_combo: int
+    - unlocked_teas: set
+    - unlocked_cats: set
     
     + save_progress()
     + load_progress()
     + add_hearts(amount)
-    + unlock_tea(tea_name)
+    + reset_combo()
 ```
 
 ### Dependencies (pyproject.toml)
@@ -235,30 +271,38 @@ dependencies = [
 
 ## 🎯 MVP (Minimum Viable Product) Features
 
-### Phase 1 - Core Gameplay (Week 1)
-- [ ] Basic game window and main loop
-- [ ] 3 starter cats with simple sprites
-- [ ] 3 starter teas
-- [ ] Cat arrival and departure system
-- [ ] Tea brewing and serving
-- [ ] Heart collection system
-- [ ] Basic UI (heart counter, tea menu)
+### Phase 1 - Core Gameplay (Week 1) ✅ COMPLETED
+- [x] Basic game window and main loop
+- [x] 6 cats with sprite system and fallbacks
+- [x] 8 different Chinese teas
+- [x] Cat arrival and departure system with patience
+- [x] Traditional tea ceremony brewing (7-step process)
+- [x] Heart collection system
+- [x] Basic UI (heart counter, tea drawer, combo display)
+- [x] Drag & drop mechanics for all tea equipment
+- [x] Brewing timer with progress display
+- [x] Petting mechanic for bonus hearts
 
-### Phase 2 - Polish (Week 2)
-- [ ] Better graphics/sprites
+### Phase 2 - Polish (Week 2) 🔄 IN PROGRESS
+- [x] Sprite loading system with grid extraction
+- [x] DALL-E 3 integration for sprite generation
+- [x] Fallback rendering system
+- [x] Modular code structure (tea_objects module)
 - [ ] Sound effects and music
-- [ ] Save/load system
-- [ ] Unlock system (3 more cats, 5 more teas)
-- [ ] Shop/unlock menu
-- [ ] Statistics screen
+- [x] Save/load system (basic implementation)
+- [x] Unlock system (all cats and teas)
+- [ ] Shop/unlock menu UI
+- [x] Statistics tracking
 
-### Phase 3 - Enhancement (Week 3)
-- [ ] Animations and particle effects
-- [ ] Combo system
+### Phase 3 - Enhancement (Week 3) 📋 PLANNED
+- [ ] Generate all sprite assets via DALL-E
+- [ ] Particle effects (steam, sparkles, hearts, petals)
+- [x] Combo system (basic tracking)
 - [ ] Special events (golden cat)
-- [ ] Garden decorations
+- [ ] Background decorations and animations
 - [ ] Tutorial/help screen
 - [ ] Final polish and bug fixes
+- [ ] Sound and music integration
 
 ## 🎨 UI Mockup Description
 

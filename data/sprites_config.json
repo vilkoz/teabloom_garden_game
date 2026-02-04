@@ -1,0 +1,549 @@
+[
+  {
+    "name": "mimi",
+    "variants": [
+      "normal",
+      "happy",
+      "impatient",
+      "disappointed"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 2,
+    "sprite_size": [
+      274,
+      229
+    ],
+    "render_size": [
+      100,
+      100
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      8,
+      8
+    ]
+  },
+  {
+    "name": "luna",
+    "variants": [
+      "normal",
+      "happy",
+      "impatient",
+      "disappointed"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 2,
+    "sprite_size": [
+      290,
+      330
+    ],
+    "render_size": [
+      100,
+      100
+    ],
+    "border_offset": [
+      25,
+      25
+    ],
+    "grid_offset": [
+      60,
+      150
+    ]
+  },
+  {
+    "name": "tofu",
+    "variants": [
+      "normal",
+      "happy",
+      "impatient",
+      "disappointed"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 2,
+    "sprite_size": [
+      303,
+      320
+    ],
+    "render_size": [
+      100,
+      100
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      8,
+      8
+    ]
+  },
+  {
+    "name": "ginger",
+    "variants": [
+      "normal",
+      "happy",
+      "impatient",
+      "disappointed"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 2,
+    "sprite_size": [
+      100,
+      100
+    ],
+    "render_size": [
+      100,
+      100
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "petya",
+    "variants": [
+      "normal",
+      "happy",
+      "impatient",
+      "disappointed"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 2,
+    "sprite_size": [
+      290,
+      265
+    ],
+    "render_size": [
+      100,
+      100
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      8,
+      8
+    ]
+  },
+  {
+    "name": "lapilaps",
+    "variants": [
+      "normal",
+      "happy",
+      "impatient",
+      "disappointed"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 2,
+    "sprite_size": [
+      100,
+      100
+    ],
+    "render_size": [
+      100,
+      100
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "gaiwan",
+    "variants": [
+      "empty",
+      "tea_leaves",
+      "with_water",
+      "brewing",
+      "ready"
+    ],
+    "grid_cols": 3,
+    "grid_rows": 2,
+    "sprite_size": [
+      120,
+      120
+    ],
+    "render_size": [
+      120,
+      120
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "kettle",
+    "variants": [
+      "ready",
+      "pouring"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 1,
+    "sprite_size": [
+      100,
+      100
+    ],
+    "render_size": [
+      100,
+      100
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "chahai",
+    "variants": [
+      "empty",
+      "filled"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 1,
+    "sprite_size": [
+      90,
+      90
+    ],
+    "render_size": [
+      90,
+      90
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "teacup",
+    "variants": [
+      "empty",
+      "filled"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 1,
+    "sprite_size": [
+      40,
+      40
+    ],
+    "render_size": [
+      40,
+      40
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "tea_disks",
+    "variants": [
+      "jasmine_oolong",
+      "te_guan_yin",
+      "silver_needle",
+      "dan_tsun",
+      "violet_ya_bao",
+      "dualist_red",
+      "leach_tears",
+      "golden_monkey"
+    ],
+    "grid_cols": 4,
+    "grid_rows": 2,
+    "sprite_size": [
+      80,
+      80
+    ],
+    "render_size": [
+      80,
+      80
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "cha_ban",
+    "variants": [
+      "single"
+    ],
+    "grid_cols": 1,
+    "grid_rows": 1,
+    "sprite_size": [
+      300,
+      600
+    ],
+    "render_size": [
+      300,
+      600
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "tea_drawer",
+    "variants": [
+      "single"
+    ],
+    "grid_cols": 1,
+    "grid_rows": 1,
+    "sprite_size": [
+      800,
+      150
+    ],
+    "render_size": [
+      800,
+      150
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "border_frame",
+    "variants": [
+      "single"
+    ],
+    "grid_cols": 1,
+    "grid_rows": 1,
+    "sprite_size": [
+      1024,
+      768
+    ],
+    "render_size": [
+      1024,
+      768
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "ui_hearts",
+    "variants": [
+      "filled",
+      "empty"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 1,
+    "sprite_size": [
+      24,
+      24
+    ],
+    "render_size": [
+      24,
+      24
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "thought_bubble",
+    "variants": [
+      "single"
+    ],
+    "grid_cols": 1,
+    "grid_rows": 1,
+    "sprite_size": [
+      120,
+      80
+    ],
+    "render_size": [
+      120,
+      80
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "lock_icon",
+    "variants": [
+      "single"
+    ],
+    "grid_cols": 1,
+    "grid_rows": 1,
+    "sprite_size": [
+      40,
+      40
+    ],
+    "render_size": [
+      40,
+      40
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "steam_particles",
+    "variants": [
+      "frame1",
+      "frame2",
+      "frame3",
+      "frame4"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 2,
+    "sprite_size": [
+      20,
+      20
+    ],
+    "render_size": [
+      20,
+      20
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "heart_particles",
+    "variants": [
+      "small",
+      "medium",
+      "large"
+    ],
+    "grid_cols": 3,
+    "grid_rows": 1,
+    "sprite_size": [
+      15,
+      15
+    ],
+    "render_size": [
+      15,
+      15
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "sparkles",
+    "variants": [
+      "frame1",
+      "frame2",
+      "frame3",
+      "frame4"
+    ],
+    "grid_cols": 2,
+    "grid_rows": 2,
+    "sprite_size": [
+      30,
+      30
+    ],
+    "render_size": [
+      30,
+      30
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  },
+  {
+    "name": "petals",
+    "variants": [
+      "frame1",
+      "frame2",
+      "frame3"
+    ],
+    "grid_cols": 3,
+    "grid_rows": 1,
+    "sprite_size": [
+      15,
+      15
+    ],
+    "render_size": [
+      15,
+      15
+    ],
+    "border_offset": [
+      0,
+      0
+    ],
+    "grid_offset": [
+      0,
+      0
+    ]
+  }
+]
