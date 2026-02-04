@@ -1,0 +1,61 @@
+{
+  "cats": [
+    {
+      "id": "mimi",
+      "name": "Mimi",
+      "description": "Orange tabby, loves jasmine tea",
+      "personality": "Friendly and energetic",
+      "favorite_tea": "jasmine_oolong",
+      "unlocked": true,
+      "color": [255, 165, 0]
+    },
+    {
+      "id": "luna",
+      "name": "Luna",
+      "description": "Black cat with white paws, loves oolong tea",
+      "personality": "Mysterious and elegant",
+      "favorite_tea": "te_guan_yin_oolong",
+      "unlocked": true,
+      "color": [50, 50, 50]
+    },
+    {
+      "id": "tofu",
+      "name": "Tofu",
+      "description": "White fluffy cat, loves white tea",
+      "personality": "Shy and sweet",
+      "favorite_tea": "silver_needle_white",
+      "unlocked": true,
+      "color": [245, 245, 245]
+    },
+    {
+      "id": "ginger",
+      "name": "Ginger",
+      "description": "Calico, loves pu-erh tea",
+      "personality": "Curious and playful",
+      "favorite_tea": "leach_tears_ripe_puerh",
+      "unlocked": false,
+      "unlock_requirement": 20,
+      "color": [210, 105, 30]
+    },
+    {
+      "id": "petya",
+      "name": "Petya",
+      "description": "Grey Siberian Cat, loves red tea",
+      "personality": "Noble and calm",
+      "favorite_tea": "dualist_red_tea",
+      "unlocked": false,
+      "unlock_requirement": 50,
+      "color": [128, 128, 128]
+    },
+    {
+      "id": "lapilaps",
+      "name": "Lapilaps",
+      "description": "Pink-collar Siamese, loves white tea",
+      "personality": "Elegant and rare",
+      "favorite_tea": "violet_ya_bao",
+      "unlocked": false,
+      "unlock_requirement": 100,
+      "color": [220, 180, 160]
+    }
+  ]
+}

@@ -1,0 +1,245 @@
+"""Main gameplay scene"""
+import pygame
+import random
+from game.entities.cat import Cat, get_random_unlocked_cat, load_cats
+from game.entities.tea import Tea, load_teas
+from game.ui.button import Button
+from game.ui.text import Text
+
+
+class GameScene:
+    """Main gameplay scene"""
+    
+    def __init__(self, screen, game_state):
+        self.screen = screen
+        self.game_state = game_state
+        self.width = screen.get_width()
+        self.height = screen.get_height()
+        
+        # Load game data
+        self.cats_data = load_cats()
+        self.teas, self.tea_categories = load_teas()
+        
+        # Update tea unlock status from game state
+        for tea in self.teas:
+            tea.unlocked = self.game_state.is_tea_unlocked(tea.id)
+        
+        # Update cat unlock status
+        for cat_data in self.cats_data:
+            cat_data['unlocked'] = self.game_state.is_cat_unlocked(cat_data['id'])
+        
+        # Active cats in the garden
+        self.active_cats = []
+        self.max_cats = 3
+        
+        # Cat spawn timer
+        self.cat_spawn_timer = 0.0
+        self.cat_spawn_interval = random.uniform(10, 20)
+        
+        # Selected tea for brewing
+        self.selected_tea = None
+        self.brewing_tea = None
+        self.dragging_tea = None
+        
+        # UI elements
+        self.menu_button = Button(self.width - 120, 10, 110, 40, "Menu", 
+                                  color=(200, 200, 200))
+        
+        # Notification system
+        self.notifications = []
+        
+        # Background
+        self.bg_color = (200, 230, 200)  # Light green
+    
+    def spawn_cat(self):
+        """Spawn a new cat in the garden"""
+        if len(self.active_cats) >= self.max_cats:
+            return
+        
+        cat = get_random_unlocked_cat(self.cats_data)
+        if cat:
+            # Random position in the middle area
+            x = random.randint(50, self.width - 150)
+            y = random.randint(200, 400)
+            cat.arrive((x, y))
+            self.active_cats.append(cat)
+    
+    def handle_event(self, event):
+        """Handle input events"""
+        if event.type == pygame.QUIT:
+            self.game_state.save_progress()
+            return "quit"
+        
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            
+            # Check tea selection
+            for i, tea in enumerate(self.teas):
+                if tea.unlocked:
+                    tea_pos = (20 + i * 70, self.height - 80)
+                    if tea.collides_with(mouse_pos):
+                        if not tea.is_brewing and not tea.is_ready:
+                            tea.start_brew()
+                            self.brewing_tea = tea
+                        elif tea.is_ready:
+                            # Start dragging
+                            self.dragging_tea = tea
+                            tea.dragging = True
+        
+        if event.type == pygame.MOUSEBUTTONUP:
+            if self.dragging_tea:
+                mouse_pos = pygame.mouse.get_pos()
+                
+                # Check if tea was served to a cat
+                served = False
+                for cat in self.active_cats:
+                    if cat.state == Cat.STATE_WAITING and cat.collides_with(mouse_pos):
+                        # Serve tea to cat
+                        hearts = cat.receive_tea(self.dragging_tea.id)
+                        
+                        if hearts > 0:
+                            # Correct tea!
+                            combo_bonus = self.game_state.get_combo_bonus()
+                            total_hearts = hearts + combo_bonus
+                            self.game_state.add_hearts(total_hearts)
+                            self.game_state.record_serve(True)
+                            
+                            # Check for unlocks
+                            unlocks = self.game_state.check_unlocks()
+                            for unlock_type, unlock_id in unlocks:
+                                if unlock_type == 'tea':
+                                    self.add_notification(f"Unlocked new tea!")
+                                    # Update tea unlock status
+                                    for tea in self.teas:
+                                        if tea.id == unlock_id:
+                                            tea.unlocked = True
+                                elif unlock_type == 'cat':
+                                    self.add_notification(f"Unlocked new cat!")
+                                    # Update cat unlock status
+                                    for cat_data in self.cats_data:
+                                        if cat_data['id'] == unlock_id:
+                                            cat_data['unlocked'] = True
+                            
+                            if combo_bonus > 0:
+                                self.add_notification(f"Combo x{self.game_state.current_combo}! +{combo_bonus} bonus")
+                        else:
+                            # Wrong tea
+                            self.game_state.record_serve(False)
+                        
+                        served = True
+                        break
+                
+                # Reset tea
+                self.dragging_tea.serve()
+                self.dragging_tea.dragging = False
+                self.dragging_tea = None
+        
+        if event.type == pygame.MOUSEMOTION:
+            if self.dragging_tea:
+                self.dragging_tea.position = pygame.mouse.get_pos()
+        
+        return None
+    
+    def update(self, dt):
+        """Update game state"""
+        self.game_state.update_playtime(dt)
+        
+        # Update cat spawn timer
+        self.cat_spawn_timer += dt
+        if self.cat_spawn_timer >= self.cat_spawn_interval:
+            self.spawn_cat()
+            self.cat_spawn_timer = 0.0
+            self.cat_spawn_interval = random.uniform(10, 20)
+        
+        # Update cats
+        cats_to_remove = []
+        for cat in self.active_cats:
+            should_remove = cat.update(dt)
+            if should_remove:
+                cats_to_remove.append(cat)
+        
+        for cat in cats_to_remove:
+            self.active_cats.remove(cat)
+        
+        # Update teas
+        for tea in self.teas:
+            if tea.is_brewing:
+                tea.update_brew(dt)
+        
+        # Update notifications
+        self.notifications = [(msg, time - dt) for msg, time in self.notifications if time > 0]
+        
+        # Update menu button
+        mouse_pos = pygame.mouse.get_pos()
+        mouse_pressed = pygame.mouse.get_pressed()[0]
+        if self.menu_button.update(mouse_pos, mouse_pressed):
+            self.game_state.save_progress()
+            return "menu"
+        
+        return None
+    
+    def add_notification(self, message):
+        """Add a notification message"""
+        self.notifications.append((message, 3.0))  # Show for 3 seconds
+    
+    def draw(self):
+        """Draw the game scene"""
+        # Background
+        self.screen.fill(self.bg_color)
+        
+        # Draw garden area
+        pygame.draw.rect(self.screen, (180, 210, 180), (0, 150, self.width, 350))
+        
+        # Draw decorative plants
+        for i in range(5):
+            x = 100 + i * 200
+            pygame.draw.circle(self.screen, (100, 150, 100), (x, 180), 20)
+            pygame.draw.circle(self.screen, (255, 192, 203), (x, 180), 10)
+        
+        # Draw cats
+        for cat in self.active_cats:
+            cat.draw(self.screen)
+        
+        # Draw UI bar at top
+        pygame.draw.rect(self.screen, (139, 69, 19), (0, 0, self.width, 100))
+        
+        # Draw title and stats
+        Text.draw_text(self.screen, "🏮 Tea Garden Cats", 20, 20, 
+                      font_size=42, color=(255, 255, 255), bold=True)
+        Text.draw_text(self.screen, f"❤ Hearts: {self.game_state.hearts}", 
+                      20, 60, font_size=32, color=(255, 0, 127))
+        Text.draw_text(self.screen, f"Combo: {self.game_state.current_combo}", 
+                      300, 60, font_size=32, color=(255, 215, 0))
+        
+        # Draw menu button
+        self.menu_button.draw(self.screen)
+        
+        # Draw tea menu bar at bottom
+        pygame.draw.rect(self.screen, (210, 180, 140), 
+                        (0, self.height - 100, self.width, 100))
+        Text.draw_text(self.screen, "Tea Menu:", 20, self.height - 95, 
+                      font_size=28, color=(0, 0, 0))
+        
+        # Draw tea options
+        for i, tea in enumerate(self.teas):
+            if tea.unlocked:
+                tea_x = 20 + i * 70
+                tea_y = self.height - 80
+                
+                if not tea.dragging:
+                    tea.draw(self.screen, (tea_x, tea_y))
+                    
+                    # Draw tea name
+                    font = pygame.font.Font(None, 16)
+                    name_parts = tea.name.split()
+                    name_text = font.render(name_parts[0], True, (0, 0, 0))
+                    self.screen.blit(name_text, (tea_x + 5, tea_y - 15))
+        
+        # Draw dragging tea on top
+        if self.dragging_tea:
+            self.dragging_tea.draw(self.screen)
+        
+        # Draw notifications
+        for i, (msg, _) in enumerate(self.notifications):
+            Text.draw_text(self.screen, msg, self.width // 2, 120 + i * 30, 
+                          font_size=28, color=(255, 215, 0), center=True)
