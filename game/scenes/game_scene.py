@@ -4,6 +4,7 @@ import random
 import json
 from ..sprite_loader import get_sprite_loader
 from ..tea_objects import TeaDisk, TeaKettle, HotWaterKettle, ChaHai, TeaCup, CatVisitor
+from ..tea_objects.tea_god import TeaGod
 from ..ui.tooltip import Tooltip
 
 
@@ -39,6 +40,7 @@ class GameScene:
         self.cha_hai = ChaHai((120, 400), self.sprite_loader)
         self.tea_cups = []
         self._init_tea_cups()
+        self.tea_god = TeaGod((220, 260), self.sprite_loader)
         
         # Cat visiting area (center-right)
         self.cat_visitors = []
@@ -233,7 +235,14 @@ class GameScene:
                 
                 # Handle tea kettle pour to cha hai
                 elif self.dragging_object == self.tea_kettle:
-                    if self.cha_hai.contains_point(mouse_pos):
+                    if self.tea_god.contains_point(mouse_pos):
+                        # Dispose tea leaves
+                        if self.tea_kettle.tea_data:
+                            self.tea_kettle.tea_data = None
+                            self.tea_kettle.state = self.tea_kettle.STATE_EMPTY
+                            self.tea_god.receive_leaves()
+                        self.tea_kettle.snap_back()
+                    elif self.cha_hai.contains_point(mouse_pos):
                         tea_data = self.tea_kettle.pour_to_cha_hai(
                             snap_back_after=True,
                             target_position=self.cha_hai.position
@@ -246,26 +255,41 @@ class GameScene:
                 
                 # Handle cha hai pour to cups
                 elif self.dragging_object == self.cha_hai:
-                    for cup in self.tea_cups:
-                        if cup.contains_point(mouse_pos) and not cup.tea_data:
-                            tea_data = self.cha_hai.pour_to_cup()
-                            if tea_data:
-                                cup.fill(tea_data)
-                            break
-                    # Reset position
-                    self.cha_hai.position = [120, 400]
+                    if self.tea_god.contains_point(mouse_pos):
+                        # Dispose tea from cha hai
+                        if self.cha_hai.tea_data:
+                            self.cha_hai.tea_data = None
+                            self.tea_god.receive_tea()
+                        self.cha_hai.position = [120, 400]
+                    else:
+                        for cup in self.tea_cups:
+                            if cup.contains_point(mouse_pos) and not cup.tea_data:
+                                tea_data = self.cha_hai.pour_to_cup()
+                                if tea_data:
+                                    cup.fill(tea_data)
+                                break
+                        # Reset position
+                        self.cha_hai.position = [120, 400]
                 
                 # Handle cup drop on cat
                 elif isinstance(self.dragging_object, TeaCup):
-                    for cat in self.cat_visitors:
-                        cat_rect = pygame.Rect(cat.position[0] - 40, cat.position[1] - 40, 80, 80)
-                        if cat_rect.collidepoint(mouse_pos) and cat.state == "waiting":
-                            tea_data = self.dragging_object.empty()
-                            if tea_data:
-                                result = cat.receive_tea(tea_data['id'])
-                                if result:
-                                    self.game_state.add_hearts(result['hearts'])
-                            break
+                    if self.tea_god.contains_point(mouse_pos):
+                        # Dispose tea from cup
+                        tea_data = self.dragging_object.tea_data
+                        if tea_data:
+                            self.dragging_object.empty()
+                            self.tea_god.receive_tea()
+                    else:
+                        # Check cat serving
+                        for cat in self.cat_visitors:
+                            cat_rect = pygame.Rect(cat.position[0] - 40, cat.position[1] - 40, 80, 80)
+                            if cat_rect.collidepoint(mouse_pos) and cat.state == "waiting":
+                                tea_data = self.dragging_object.empty()
+                                if tea_data:
+                                    result = cat.receive_tea(tea_data['id'])
+                                    if result:
+                                        self.game_state.add_hearts(result['hearts'])
+                                break
                     
                     self.dragging_object.snap_back()
                     self.dragging_object.dragging = False
@@ -279,6 +303,7 @@ class GameScene:
         # Update tea kettle brewing and animations
         self.tea_kettle.update(dt)
         self.hot_water_kettle.update(dt)
+        self.tea_god.update(dt)
         
         # Update cats
         for cat in self.cat_visitors[:]:
@@ -345,6 +370,8 @@ class GameScene:
         for cup in self.tea_cups:
             if cup != self.dragging_object:
                 cup.draw(self.screen)
+        # Draw tea god
+        self.tea_god.draw(self.screen)
         
         # Draw cat area label
         cat_font = pygame.font.Font(None, 22)

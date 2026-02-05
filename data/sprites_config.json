@@ -570,5 +570,33 @@
       40,
       0
     ]
+  },
+  {
+    "name": "tea_god",
+    "variants": [
+      "clean",
+      "pouring_tea_1",
+      "pouring_tea_2",
+      "dropping_leaves_1",
+      "dropping_leaves_2"
+    ],
+    "grid_cols": 3,
+    "grid_rows": 2,
+    "sprite_size": [
+      320,
+      350
+    ],
+    "render_size": [
+      80,
+      80
+    ],
+    "border_offset": [
+      0,
+      150
+    ],
+    "grid_offset": [
+      20,
+      0
+    ]
   }
 ]

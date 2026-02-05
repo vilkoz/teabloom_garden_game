@@ -2,7 +2,12 @@
 Generate grid sprite sheets using Google Gemini Imagen API
 """
 import os
+from pathlib import Path
 from google import genai
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 BACKGROUND_SUFFIX = ", background must be solid black (#000000) only, no transparency, no checkerboard, no grid pattern, no texture, no gradient"
 
@@ -95,6 +100,13 @@ ENTITY_VARIANTS = {
     "border_frame": [
         "single: decorative Chinese garden border frame",
     ],
+    "tea_god": [
+        "clean: small stone tea pet figure of Buddha/deity, clean surface",
+        "pouring_tea_1: tea liquid flowing over figure surface, slight glow, frame 1",
+        "pouring_tea_2: tea liquid flowing over figure surface, slight glow, frame 2",
+        "dropping_leaves_1: wet tea leaves on top of figure, tea leaves scattered on figure and base, frame 1",
+        "dropping_leaves_2: wet tea leaves on top of figure, tea leaves scattered on figure and base, frame 2",
+    ],
     "steam_particles": [
         "frame1: wispy steam variant",
         "frame2: wispy steam variant",
@@ -153,6 +165,7 @@ def generate_entity_grid(entity_name, grid_dir="assets/images/grids/"):
     print(f"\n🧩 Generating single-prompt grid for '{entity_name}' ({len(variants)} variants)...\n")
     client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
     prompt = build_grid_prompt(entity_name, variants)
+    print("Using prompt:", prompt)
 
     try:
         response = client.models.generate_content(
