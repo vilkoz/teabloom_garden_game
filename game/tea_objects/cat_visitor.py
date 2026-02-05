@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 class CatVisitor:
     """Enhanced cat for the visiting area"""
-    def __init__(self, cat_data, slot_position, slot_index, sprite_loader):
+    def __init__(self, cat_data, slot_position, slot_index, sprite_loader, particle_system):
         self.cat_data = cat_data
         self.slot_position = slot_position
         self.slot_index = slot_index
@@ -21,6 +21,7 @@ class CatVisitor:
         self.happiness = 0
         self.animation_timer = 0
         self.sprite_loader = sprite_loader
+        self.particle_system = particle_system
         
         # Generate random birthday (cat can be 0-15 years old)
         self.birthday = self._generate_random_birthday()
@@ -96,6 +97,7 @@ class CatVisitor:
     
     def pet(self):
         if self.can_pet():
+            self.particle_system.spawn_hearts(self.position, count=5)
             return 1  # Bonus heart
         return 0
     

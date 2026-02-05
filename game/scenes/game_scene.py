@@ -6,6 +6,7 @@ from ..sprite_loader import get_sprite_loader
 from ..tea_objects import TeaDisk, TeaKettle, HotWaterKettle, ChaHai, TeaCup, CatVisitor
 from ..tea_objects.tea_god import TeaGod
 from ..ui.tooltip import Tooltip
+from ..ui.particle_system import ParticleSystem
 
 
 class GameScene:
@@ -58,6 +59,9 @@ class GameScene:
         self.hovered_cat = None
         self.hovered_tea_cup = None
         
+        # Particle system
+        self.particle_system = ParticleSystem(self.sprite_loader)
+        
         # Spawn first cat
         self._spawn_cat()
     
@@ -101,9 +105,11 @@ class GameScene:
             slot_x = 500
             
             cat_data = random.choice(available_cats)
-            cat = CatVisitor(cat_data, (slot_x, slot_y), slot_index, self.sprite_loader)
+            cat = CatVisitor(cat_data, (slot_x, slot_y), slot_index, self.sprite_loader, self.particle_system)
             cat.position = [850, slot_y]  # Start off-screen right
             self.cat_visitors.append(cat)
+    
+
     
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -305,6 +311,9 @@ class GameScene:
         self.hot_water_kettle.update(dt)
         self.tea_god.update(dt)
         
+        # Update particles
+        self.particle_system.update(dt)
+        
         # Update cats
         for cat in self.cat_visitors[:]:
             cat.update(dt)
@@ -352,7 +361,14 @@ class GameScene:
                 disk.draw(self.screen)
         
         # Draw cha ban area
-        pygame.draw.rect(self.screen, (160, 120, 80), (30, 140, 240, 480), border_radius=10)
+        cha_ban_sprite = self.sprite_loader.get_sprite('cha_ban', 'single') if self.sprite_loader else None
+        if cha_ban_sprite:
+            # Position cha ban sprite
+            cha_ban_rect = cha_ban_sprite.get_rect(center=(150, 380))
+            self.screen.blit(cha_ban_sprite, cha_ban_rect)
+        else:
+            # Fallback: draw colored rectangle
+            pygame.draw.rect(self.screen, (160, 120, 80), (30, 140, 240, 480), border_radius=10)
         
         cha_ban_font = pygame.font.Font(None, 20)
         cha_ban_label = cha_ban_font.render("Cha Ban", True, (255, 255, 200))
@@ -389,6 +405,9 @@ class GameScene:
         # Draw cats
         for cat in self.cat_visitors:
             cat.draw(self.screen)
+        
+        # Draw particles
+        self.particle_system.draw(self.screen)
         
         # Draw hearts counter
         hearts_font = pygame.font.Font(None, 28)
