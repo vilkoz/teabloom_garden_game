@@ -320,15 +320,22 @@ class GameScene:
         return None
     
     def draw(self):
-        # Background
+        # Background - solid color
         self.screen.fill((245, 235, 220))
         
-        # Draw decorative border
-        border_color = (100, 150, 100)
-        pygame.draw.rect(self.screen, border_color, (0, 0, self.width, 20))
-        pygame.draw.rect(self.screen, border_color, (0, self.height - 20, self.width, 20))
-        pygame.draw.rect(self.screen, border_color, (0, 0, 20, self.height))
-        pygame.draw.rect(self.screen, border_color, (self.width - 20, 0, 20, self.height))
+        # Draw border frame sprite if available
+        border_sprite = self.sprite_loader.get_sprite('border_frame', 'single') if self.sprite_loader else None
+        if border_sprite:
+            # Center the border frame
+            border_rect = border_sprite.get_rect(center=(self.width // 2, self.height // 2))
+            self.screen.blit(border_sprite, border_rect)
+        else:
+            # Fallback: Draw decorative border rectangles
+            border_color = (100, 150, 100)
+            pygame.draw.rect(self.screen, border_color, (0, 0, self.width, 20))
+            pygame.draw.rect(self.screen, border_color, (0, self.height - 20, self.width, 20))
+            pygame.draw.rect(self.screen, border_color, (0, 0, 20, self.height))
+            pygame.draw.rect(self.screen, border_color, (self.width - 20, 0, 20, self.height))
         
         # Draw tea drawer area
         pygame.draw.rect(self.screen, (139, 90, 60), (230, 40, 540, 80), border_radius=10)
@@ -385,7 +392,7 @@ class GameScene:
         
         # Draw hearts counter
         hearts_font = pygame.font.Font(None, 28)
-        hearts_text = hearts_font.render(f"❤ Hearts: {self.game_state.hearts}", True, (200, 50, 50))
+        hearts_text = hearts_font.render(f"Hearts: {self.game_state.hearts}", True, (200, 50, 50))
         hearts_rect = hearts_text.get_rect(center=(650, 30))
         self.screen.blit(hearts_text, hearts_rect)
         

@@ -53,7 +53,7 @@ class HotWaterKettle:
             
             # Draw steam above sprite
             font = pygame.font.Font(None, 20)
-            steam_text = font.render("♨♨♨", True, (200, 220, 255))
+            steam_text = font.render("~~~", True, (200, 220, 255))
             steam_rect = steam_text.get_rect(center=(x, y - 60))
             screen.blit(steam_text, steam_rect)
         else:
@@ -63,7 +63,7 @@ class HotWaterKettle:
             pygame.draw.circle(screen, (100, 100, 120), (x + 40, y), 8)
             
             font = pygame.font.Font(None, 20)
-            steam_text = font.render("♨♨♨", True, (200, 220, 255))
+            steam_text = font.render("~~~", True, (200, 220, 255))
             steam_rect = steam_text.get_rect(center=(x, y - 50))
             screen.blit(steam_text, steam_rect)
             

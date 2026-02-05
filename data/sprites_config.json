@@ -7,16 +7,16 @@
     "grid_cols": 1,
     "grid_rows": 1,
     "sprite_size": [
-      554,
-      426
+      2048,
+      2048
     ],
     "render_size": [
       1024,
       768
     ],
     "border_offset": [
-      235,
-      299
+      0,
+      0
     ],
     "grid_offset": [
       0,
@@ -584,7 +584,7 @@
     "grid_rows": 2,
     "sprite_size": [
       320,
-      350
+      380
     ],
     "render_size": [
       80,
@@ -592,11 +592,11 @@
     ],
     "border_offset": [
       0,
-      150
+      100
     ],
     "grid_offset": [
       20,
-      0
+      50
     ]
   }
 ]

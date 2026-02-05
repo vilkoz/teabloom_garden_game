@@ -102,8 +102,8 @@ ENTITY_VARIANTS = {
     ],
     "tea_god": [
         "clean: small stone tea pet figure of Buddha/deity, clean surface",
-        "pouring_tea_1: tea liquid flowing over figure surface, slight glow, frame 1",
-        "pouring_tea_2: tea liquid flowing over figure surface, slight glow, frame 2",
+        "pouring_tea_1: tea liquid flowing over figure surface, frame 1",
+        "pouring_tea_2: tea liquid flowing over figure surface, frame 2",
         "dropping_leaves_1: wet tea leaves on top of figure, tea leaves scattered on figure and base, frame 1",
         "dropping_leaves_2: wet tea leaves on top of figure, tea leaves scattered on figure and base, frame 2",
     ],

@@ -163,7 +163,7 @@ class CatVisitor:
             
             # Draw tea emoji in bubble
             bubble_font = pygame.font.Font(None, 28)
-            fav_tea_text = bubble_font.render("🍵", True, (100, 150, 100))
+            fav_tea_text = bubble_font.render("Tea", True, (100, 150, 100))
             fav_rect = fav_tea_text.get_rect(center=(bubble_x, bubble_y))
             screen.blit(fav_tea_text, fav_rect)
         

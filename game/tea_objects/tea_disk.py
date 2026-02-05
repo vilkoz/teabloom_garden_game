@@ -66,7 +66,7 @@ class TeaDisk:
                 screen.blit(s, (x - self.radius, y - self.radius))
                 
                 lock_font = pygame.font.Font(None, 24)
-                lock_surface = lock_font.render("🔒", True, (255, 200, 0))
+                lock_surface = lock_font.render("LOCKED", True, (255, 200, 0))
                 lock_rect = lock_surface.get_rect(center=(x, y))
                 screen.blit(lock_surface, lock_rect)
     

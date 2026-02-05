@@ -63,7 +63,7 @@ class ChaHai:
             
             if self.tea_data:
                 font = pygame.font.Font(None, 14)
-                label = font.render("Pour→", True, (255, 255, 255))
+                label = font.render("Pour", True, (255, 255, 255))
                 label_rect = label.get_rect(center=(x, y))
                 screen.blit(label, label_rect)
     

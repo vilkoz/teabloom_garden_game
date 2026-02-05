@@ -319,13 +319,13 @@ class SpriteViewer:
         
         up_color = self.button_hover if self.scroll_up_btn.collidepoint(mouse_pos) else self.button_color
         pygame.draw.rect(self.screen, up_color, self.scroll_up_btn, border_radius=5)
-        up_text = self.font_medium.render("↑", True, (255, 255, 255))
+        up_text = self.font_medium.render("^", True, (255, 255, 255))
         up_rect = up_text.get_rect(center=self.scroll_up_btn.center)
         self.screen.blit(up_text, up_rect)
         
         down_color = self.button_hover if self.scroll_down_btn.collidepoint(mouse_pos) else self.button_color
         pygame.draw.rect(self.screen, down_color, self.scroll_down_btn, border_radius=5)
-        down_text = self.font_medium.render("↓", True, (255, 255, 255))
+        down_text = self.font_medium.render("v", True, (255, 255, 255))
         down_rect = down_text.get_rect(center=self.scroll_down_btn.center)
         self.screen.blit(down_text, down_rect)
         
