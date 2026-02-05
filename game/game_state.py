@@ -8,7 +8,12 @@ class GameState:
     
     def __init__(self):
         self.hearts = 0
-        self.unlocked_teas = ['jasmine_oolong', 'te_guan_yin_oolong', 'silver_needle_white']
+        
+        # Load tea data to get defaults and unlock costs
+        self.teas_data = self._load_teas_data()
+        
+        # Set default unlocked teas from data
+        self.unlocked_teas = [tea['id'] for tea in self.teas_data if tea.get('unlocked', False)]
         self.unlocked_cats = ['mimi', 'luna', 'tofu']
         self.statistics = {
             'teas_served': 0,
@@ -27,6 +32,17 @@ class GameState:
         
         # Try to load existing save
         self.load_progress()
+    
+    def _load_teas_data(self):
+        """Load teas data from JSON file"""
+        teas_path = Path(__file__).parent.parent / "data" / "teas_data.json"
+        try:
+            with open(teas_path, 'r') as f:
+                data = json.load(f)
+                return data.get('teas', []) if isinstance(data, dict) else data
+        except Exception as e:
+            print(f"Failed to load teas data: {e}")
+            return []
     
     def add_hearts(self, amount):
         """Add hearts to the player's total"""
@@ -87,19 +103,12 @@ class GameState:
         """Check if player has reached unlock milestones"""
         unlocks = []
         
-        # Tea unlocks based on hearts
-        tea_unlocks = {
-            5: 'dan_tsun_oolong',
-            15: 'violet_ya_bao',
-            30: 'dualist_red_tea',
-            50: 'leach_tears_ripe_puerh',
-            75: 'golden_monkey_black'
-        }
-        
-        for hearts_req, tea_id in tea_unlocks.items():
-            if self.statistics['total_hearts'] >= hearts_req:
-                if self.unlock_tea(tea_id):
-                    unlocks.append(('tea', tea_id))
+        # Tea unlocks based on unlock_cost from data
+        for tea in self.teas_data:
+            unlock_cost = tea.get('unlock_cost', 0)
+            if unlock_cost > 0 and self.statistics['total_hearts'] >= unlock_cost:
+                if self.unlock_tea(tea['id']):
+                    unlocks.append(('tea', tea['id']))
         
         # Cat unlocks
         if self.statistics['correct_serves'] >= 20:

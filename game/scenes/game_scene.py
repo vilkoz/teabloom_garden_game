@@ -54,6 +54,7 @@ class GameScene:
         self.menu_button_rect = pygame.Rect(self.width - 120, 10, 110, 40)
         self.tooltip = Tooltip()
         self.hovered_cat = None
+        self.hovered_tea_cup = None
         
         # Spawn first cat
         self._spawn_cat()
@@ -66,7 +67,7 @@ class GameScene:
         
         for i, tea_data in enumerate(self.all_teas):
             x = start_x + (i % 8) * spacing
-            disk = TeaDisk(tea_data, (x, y), self.sprite_loader)
+            disk = TeaDisk(tea_data, (x, y), self.sprite_loader, self.game_state)
             self.tea_disks.append(disk)
     
     def _init_tea_cups(self):
@@ -83,8 +84,8 @@ class GameScene:
         if len(self.cat_visitors) >= 5:
             return
         
-        # Get available cats
-        available_cats = [c for c in self.all_cats if c.get('unlocked', False)]
+        # Get available cats from game state
+        available_cats = [c for c in self.all_cats if self.game_state.is_cat_unlocked(c['id'])]
         if not available_cats:
             return
         
@@ -121,7 +122,7 @@ class GameScene:
             
             # Check for dragging tea disks
             for disk in self.tea_disks:
-                if disk.tea_data.get('unlocked', False) and disk.contains_point(mouse_pos):
+                if self.game_state.is_tea_unlocked(disk.tea_data['id']) and disk.contains_point(mouse_pos):
                     self.dragging_object = disk
                     disk.dragging = True
                     self.drag_offset = (disk.position[0] - mouse_pos[0], disk.position[1] - mouse_pos[1])
@@ -166,6 +167,13 @@ class GameScene:
                 for cat in self.cat_visitors:
                     if cat.contains_point(mouse_pos):
                         self.hovered_cat = cat
+                        break
+                
+                # Check for tea cup hover
+                self.hovered_tea_cup = None
+                for cup in self.tea_cups:
+                    if cup.tea_data and cup.contains_point(mouse_pos):
+                        self.hovered_tea_cup = cup
                         break
             
             if self.dragging_object:
@@ -400,3 +408,13 @@ class GameScene:
                 "Birthday": self.hovered_cat.birthday
             }
             self.tooltip.draw(self.screen, mouse_pos, cat_data['name'], tooltip_info)
+        
+        # Draw tea cup tooltip
+        elif self.hovered_tea_cup and self.hovered_tea_cup.tea_data:
+            mouse_pos = pygame.mouse.get_pos()
+            tea_data = self.hovered_tea_cup.tea_data
+            tooltip_info = {
+                "Type": tea_data.get('category', 'Unknown').replace('_', ' ').title(),
+                "Brew Time": f"{tea_data.get('brew_time', 0) / 1000:.1f}s"
+            }
+            self.tooltip.draw(self.screen, mouse_pos, tea_data['name'], tooltip_info)

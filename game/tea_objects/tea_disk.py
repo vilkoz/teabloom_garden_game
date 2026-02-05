@@ -4,13 +4,14 @@ import pygame
 
 class TeaDisk:
     """Represents a draggable tea disk in the tea drawer"""
-    def __init__(self, tea_data, position, sprite_loader):
+    def __init__(self, tea_data, position, sprite_loader, game_state):
         self.tea_data = tea_data
         self.base_position = position
         self.position = list(position)
         self.dragging = False
         self.radius = 40
         self.sprite_loader = sprite_loader
+        self.game_state = game_state
         
     def draw(self, screen):
         x, y = int(self.position[0]), int(self.position[1])
@@ -54,7 +55,7 @@ class TeaDisk:
         screen.blit(time_surface, time_rect)
         
         # Draw lock if not unlocked
-        if not self.tea_data.get('unlocked', False):
+        if not self.game_state.is_tea_unlocked(self.tea_data['id']):
             lock_sprite = self.sprite_loader.get_sprite('lock_icon', 'single') if self.sprite_loader else None
             if lock_sprite:
                 lock_rect = lock_sprite.get_rect(center=(x, y))
