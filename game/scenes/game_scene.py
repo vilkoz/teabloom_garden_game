@@ -4,6 +4,7 @@ import random
 import json
 from ..sprite_loader import get_sprite_loader
 from ..tea_objects import TeaDisk, TeaKettle, HotWaterKettle, ChaHai, TeaCup, CatVisitor
+from ..ui.tooltip import Tooltip
 
 
 class GameScene:
@@ -21,7 +22,7 @@ class GameScene:
             tea_data = json.load(f)
             self.all_teas = tea_data if isinstance(tea_data, list) else tea_data.get('teas', [])
             for tea in self.all_teas:
-                tea['brew_time'] = tea.get('brew_time', 5.0) * 1000.0
+                tea['brew_time'] = tea.get('brew_time', 5.0) * 1000.0  # Default brew time if not specified
         
         # Load cat data
         with open('data/cats_data.json', 'r') as f:
@@ -42,7 +43,8 @@ class GameScene:
         # Cat visiting area (center-right)
         self.cat_visitors = []
         self.cat_spawn_timer = 0
-        self.cat_spawn_interval = 30000  # 30 seconds
+        #self.cat_spawn_interval = 30000  # 30 seconds
+        self.cat_spawn_interval = 3000  # 30 seconds
         
         # Dragging state
         self.dragging_object = None
@@ -50,6 +52,8 @@ class GameScene:
         
         # UI
         self.menu_button_rect = pygame.Rect(self.width - 120, 10, 110, 40)
+        self.tooltip = Tooltip()
+        self.hovered_cat = None
         
         # Spawn first cat
         self._spawn_cat()
@@ -154,6 +158,16 @@ class GameScene:
                     return None
         
         elif event.type == pygame.MOUSEMOTION:
+            mouse_pos = pygame.mouse.get_pos()
+            
+            # Check for cat hover (only when not dragging)
+            if not self.dragging_object:
+                self.hovered_cat = None
+                for cat in self.cat_visitors:
+                    if cat.contains_point(mouse_pos):
+                        self.hovered_cat = cat
+                        break
+            
             if self.dragging_object:
                 mouse_pos = pygame.mouse.get_pos()
                 
@@ -348,3 +362,14 @@ class GameScene:
         # Draw dragged object last (on top of everything)
         if self.dragging_object:
             self.dragging_object.draw(self.screen)
+        
+        # Draw tooltip (on top of everything)
+        if self.hovered_cat:
+            mouse_pos = pygame.mouse.get_pos()
+            cat_data = self.hovered_cat.cat_data
+            tooltip_info = {
+                "Description": cat_data['description'],
+                "Personality": cat_data['personality'],
+                "Birthday": self.hovered_cat.birthday
+            }
+            self.tooltip.draw(self.screen, mouse_pos, cat_data['name'], tooltip_info)

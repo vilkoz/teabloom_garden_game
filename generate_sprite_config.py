@@ -16,7 +16,94 @@ def calculate_grid_size(num_variants):
     return columns, rows
 
 
-def analyze_grid_image(image_path, entity_name):
+def detect_border_offset(img, threshold=10):
+    """Detect border offset by finding first non-black pixels from edges"""
+    pixels = img.load()
+    width, height = img.size
+    
+    # Find left border
+    left_offset = 0
+    for x in range(width // 2):
+        has_content = False
+        for y in range(height):
+            if pixels[x, y][:3] != (0, 0, 0) and sum(pixels[x, y][:3]) > threshold:
+                has_content = True
+                break
+        if has_content:
+            left_offset = x
+            break
+    
+    # Find top border
+    top_offset = 0
+    for y in range(height // 2):
+        has_content = False
+        for x in range(width):
+            if pixels[x, y][:3] != (0, 0, 0) and sum(pixels[x, y][:3]) > threshold:
+                has_content = True
+                break
+        if has_content:
+            top_offset = y
+            break
+    
+    return [left_offset, top_offset]
+
+
+def detect_grid_offset(img, grid_cols, grid_rows, border_offset):
+    """Detect spacing between grid cells"""
+    pixels = img.load()
+    width, height = img.size
+    
+    if grid_cols <= 1 and grid_rows <= 1:
+        return [0, 0]
+    
+    # Calculate expected cell size including any spacing
+    available_width = width - 2 * border_offset[0]
+    available_height = height - 2 * border_offset[1]
+    
+    # Try to detect horizontal spacing (if multiple columns)
+    h_offset = 0
+    if grid_cols > 1:
+        cell_width = available_width // grid_cols
+        # Look for black gap between first and second cell
+        check_x = border_offset[0] + cell_width
+        gap_start = None
+        for x in range(check_x - 50, check_x + 50):
+            if 0 <= x < width:
+                is_black = True
+                for y in range(border_offset[1] + 10, min(border_offset[1] + 100, height)):
+                    if pixels[x, y][:3] != (0, 0, 0) and sum(pixels[x, y][:3]) > 10:
+                        is_black = False
+                        break
+                if is_black and gap_start is None:
+                    gap_start = x - (border_offset[0] + cell_width)
+                elif not is_black and gap_start is not None:
+                    h_offset = gap_start
+                    break
+    
+    # Try to detect vertical spacing (if multiple rows)
+    v_offset = 0
+    if grid_rows > 1:
+        cell_height = available_height // grid_rows
+        # Look for black gap between first and second row
+        check_y = border_offset[1] + cell_height
+        gap_start = None
+        for y in range(check_y - 50, check_y + 50):
+            if 0 <= y < height:
+                is_black = True
+                for x in range(border_offset[0] + 10, min(border_offset[0] + 100, width)):
+                    if pixels[x, y][:3] != (0, 0, 0) and sum(pixels[x, y][:3]) > 10:
+                        is_black = False
+                        break
+                if is_black and gap_start is None:
+                    gap_start = y - (border_offset[1] + cell_height)
+                elif not is_black and gap_start is not None:
+                    v_offset = gap_start
+                    break
+    
+    return [h_offset, v_offset]
+
+
+def analyze_grid_image(image_path, entity_name, existing_config=None):
     """Analyze a grid image and return sprite configuration"""
     try:
         with Image.open(image_path) as img:
@@ -30,25 +117,37 @@ def analyze_grid_image(image_path, entity_name):
             num_variants = len(variants)
             grid_cols, grid_rows = calculate_grid_size(num_variants)
             
-            # Calculate sprite size (divide image by grid)
-            sprite_width = width // grid_cols
-            sprite_height = height // grid_rows
+            # Detect border offset
+            border_offset = detect_border_offset(img)
+            
+            # Detect grid offset
+            grid_offset = detect_grid_offset(img, grid_cols, grid_rows, border_offset)
+            
+            # Calculate sprite size accounting for offsets
+            available_width = width - 2 * border_offset[0] - (grid_cols - 1) * grid_offset[0]
+            available_height = height - 2 * border_offset[1] - (grid_rows - 1) * grid_offset[1]
+            sprite_width = available_width // grid_cols
+            sprite_height = available_height // grid_rows
             
             # Extract variant names (remove descriptions)
             variant_names = [v.split(":")[0].strip() for v in variants]
             
-            # Determine reasonable render size
-            # For cats, scale down to 100x100
-            # For small items, keep original size
-            if entity_name in ['mimi', 'luna', 'tofu', 'ginger', 'petya', 'lapilaps']:
-                render_size = [100, 100]
-            elif max(sprite_width, sprite_height) > 300:
-                # Large sprites, scale down
-                scale = 100 / max(sprite_width, sprite_height)
-                render_size = [int(sprite_width * scale), int(sprite_height * scale)]
+            # Determine render size (preserve from existing config if available)
+            if existing_config and 'render_size' in existing_config:
+                render_size = existing_config['render_size']
+                print(f"  Preserved render_size: {render_size}")
             else:
-                # Keep original size
-                render_size = [sprite_width, sprite_height]
+                # For cats, scale down to 100x100
+                # For small items, keep original size
+                if entity_name in ['mimi', 'luna', 'tofu', 'ginger', 'petya', 'lapilaps']:
+                    render_size = [100, 100]
+                elif max(sprite_width, sprite_height) > 300:
+                    # Large sprites, scale down
+                    scale = 100 / max(sprite_width, sprite_height)
+                    render_size = [int(sprite_width * scale), int(sprite_height * scale)]
+                else:
+                    # Keep original size
+                    render_size = [sprite_width, sprite_height]
             
             config = {
                 "name": entity_name,
@@ -57,11 +156,14 @@ def analyze_grid_image(image_path, entity_name):
                 "grid_rows": grid_rows,
                 "sprite_size": [sprite_width, sprite_height],
                 "render_size": render_size,
-                "border_offset": [0, 0],
-                "grid_offset": [0, 0]
+                "border_offset": border_offset,
+                "grid_offset": grid_offset
             }
             
-            print(f"✓ {entity_name}: {width}x{height} image → {grid_cols}x{grid_rows} grid → {sprite_width}x{sprite_height} sprites")
+            offset_info = ""
+            if border_offset != [0, 0] or grid_offset != [0, 0]:
+                offset_info = f" [border:{border_offset}, grid:{grid_offset}]"
+            print(f"✓ {entity_name}: {width}x{height} image → {grid_cols}x{grid_rows} grid → {sprite_width}x{sprite_height} sprites{offset_info}")
             return config
             
     except FileNotFoundError:
@@ -76,6 +178,15 @@ def generate_config(grids_dir="assets/images/grids/", output_file="data/sprites_
     """Generate sprites_config.json from grid images"""
     configs = []
     
+    # Load existing config to preserve render_size
+    existing_configs = {}
+    try:
+        with open(output_file, 'r') as f:
+            for config in json.load(f):
+                existing_configs[config['name']] = config
+    except FileNotFoundError:
+        pass
+    
     print("🔍 Scanning grid images...\n")
     
     # Process all entities from ENTITY_VARIANTS
@@ -83,7 +194,8 @@ def generate_config(grids_dir="assets/images/grids/", output_file="data/sprites_
         image_path = os.path.join(grids_dir, f"{entity_name}_grid.png")
         
         if os.path.exists(image_path):
-            config = analyze_grid_image(image_path, entity_name)
+            existing_config = existing_configs.get(entity_name)
+            config = analyze_grid_image(image_path, entity_name, existing_config)
             if config:
                 configs.append(config)
         else:
@@ -98,7 +210,7 @@ def generate_config(grids_dir="assets/images/grids/", output_file="data/sprites_
             json.dump(configs, f, indent=2)
         
         print(f"\n✅ Generated {output_file} with {len(configs)} sprite configurations")
-        print(f"\n💡 Use sprite_viewer.py to fine-tune border_offset and grid_offset values")
+        print(f"\n💡 Use sprite_viewer.py to verify and fine-tune if needed")
     else:
         print("\n❌ No valid configurations generated")
 
@@ -118,8 +230,15 @@ def update_config(entity_name, grids_dir="assets/images/grids/", config_file="da
     except FileNotFoundError:
         configs = []
     
-    # Generate new config for entity
-    new_config = analyze_grid_image(image_path, entity_name)
+    # Find existing config for this entity
+    existing_config = None
+    for config in configs:
+        if config['name'] == entity_name:
+            existing_config = config
+            break
+    
+    # Generate new config for entity (preserves render_size from existing)
+    new_config = analyze_grid_image(image_path, entity_name, existing_config)
     if not new_config:
         return False
     
@@ -127,14 +246,6 @@ def update_config(entity_name, grids_dir="assets/images/grids/", config_file="da
     updated = False
     for i, config in enumerate(configs):
         if config['name'] == entity_name:
-            # Preserve manual adjustments (border_offset, grid_offset)
-            if 'border_offset' in config and config['border_offset'] != [0, 0]:
-                new_config['border_offset'] = config['border_offset']
-                print(f"  Preserved border_offset: {config['border_offset']}")
-            if 'grid_offset' in config and config['grid_offset'] != [0, 0]:
-                new_config['grid_offset'] = config['grid_offset']
-                print(f"  Preserved grid_offset: {config['grid_offset']}")
-            
             configs[i] = new_config
             updated = True
             break

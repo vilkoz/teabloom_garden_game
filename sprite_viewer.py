@@ -146,9 +146,25 @@ class SpriteViewer:
             elif event.type == pygame.KEYDOWN:
                 if self.editing_field is not None:
                     if event.key == pygame.K_RETURN:
-                        self.save_field_edit()
+                        self.save_field_edit(reload=True)
                     elif event.key == pygame.K_ESCAPE:
                         self.cancel_field_edit()
+                    elif event.key == pygame.K_UP:
+                        # Increment value by 1
+                        try:
+                            current = int(self.input_text)
+                            self.input_text = str(current + 1)
+                            self.save_field_edit(reload=True)
+                        except ValueError:
+                            pass
+                    elif event.key == pygame.K_DOWN:
+                        # Decrement value by 1
+                        try:
+                            current = int(self.input_text)
+                            self.input_text = str(max(0, current - 1))  # Don't go below 0
+                            self.save_field_edit(reload=True)
+                        except ValueError:
+                            pass
                     elif event.key == pygame.K_BACKSPACE:
                         self.input_text = self.input_text[:-1]
                     else:
@@ -229,8 +245,8 @@ class SpriteViewer:
                         self.input_text = str(sprite_config[field_name])
                     return
     
-    def save_field_edit(self):
-        """Save the edited field value"""
+    def save_field_edit(self, reload=False):
+        """Save the edited field value and optionally reload config"""
         if self.selected_sprite_index is not None and self.editing_field is not None:
             try:
                 value = int(self.input_text)
@@ -266,11 +282,17 @@ class SpriteViewer:
                 
                 # Track that this sprite was modified
                 self.modified_sprite_indices.add(self.selected_sprite_index)
+                
+                # Save and reload if requested
+                if reload:
+                    if self.save_config():
+                        self.reload_sprites()
             except ValueError:
                 print(f"Invalid value: {self.input_text}")
         
-        self.editing_field = None
-        self.input_text = ""
+        if not reload:  # Only clear editing state if not using arrow keys
+            self.editing_field = None
+            self.input_text = ""
     
     def cancel_field_edit(self):
         """Cancel editing"""

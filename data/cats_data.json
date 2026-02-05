@@ -12,9 +12,9 @@
     {
       "id": "luna",
       "name": "Luna",
-      "description": "Black cat with white paws, loves oolong tea",
+      "description": "Black cat with white paws, loves te guan yin oolong tea",
       "personality": "Mysterious and elegant",
-      "favorite_tea": "te_guan_yin_oolong",
+      "favorite_tea": "te_guan_yin",
       "unlocked": true,
       "color": [50, 50, 50]
     },
@@ -23,7 +23,7 @@
       "name": "Tofu",
       "description": "White fluffy cat, loves white tea",
       "personality": "Shy and sweet",
-      "favorite_tea": "silver_needle_white",
+      "favorite_tea": "silver_needle",
       "unlocked": true,
       "color": [245, 245, 245]
     },
@@ -32,7 +32,7 @@
       "name": "Ginger",
       "description": "Calico, loves pu-erh tea",
       "personality": "Curious and playful",
-      "favorite_tea": "leach_tears_ripe_puerh",
+      "favorite_tea": "leach_tears",
       "unlocked": false,
       "unlock_requirement": 20,
       "color": [210, 105, 30]
@@ -42,7 +42,7 @@
       "name": "Petya",
       "description": "Grey Siberian Cat, loves red tea",
       "personality": "Noble and calm",
-      "favorite_tea": "dualist_red_tea",
+      "favorite_tea": "dualist_red",
       "unlocked": false,
       "unlock_requirement": 50,
       "color": [128, 128, 128]

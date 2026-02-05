@@ -12,7 +12,7 @@
       "color": [144, 238, 144]
     },
     {
-      "id": "te_guan_yin_oolong",
+      "id": "te_guan_yin",
       "name": "Te Guan Yin Oolong",
       "category": "oolong",
       "brew_time": 3.0,
@@ -23,7 +23,7 @@
       "color": [152, 251, 152]
     },
     {
-      "id": "silver_needle_white",
+      "id": "silver_needle",
       "name": "Silver Needle White Tea",
       "category": "white_tea",
       "brew_time": 2.0,
@@ -34,7 +34,7 @@
       "color": [245, 245, 220]
     },
     {
-      "id": "dan_tsun_oolong",
+      "id": "dan_tsun",
       "name": "Dan Tsun Oolong",
       "category": "oolong",
       "brew_time": 3.0,
@@ -56,7 +56,7 @@
       "color": [221, 160, 221]
     },
     {
-      "id": "dualist_red_tea",
+      "id": "dualist_red",
       "name": "Dualist Red Tea",
       "category": "red_tea",
       "brew_time": 4.0,
@@ -67,7 +67,7 @@
       "color": [178, 34, 34]
     },
     {
-      "id": "leach_tears_ripe_puerh",
+      "id": "leach_tears",
       "name": "Leach Tears Ripe Pu-erh",
       "category": "ripe_puerh",
       "brew_time": 4.0,
@@ -78,7 +78,7 @@
       "color": [139, 69, 19]
     },
     {
-      "id": "golden_monkey_black",
+      "id": "golden_monkey",
       "name": "Golden Monkey Black Tea",
       "category": "red_tea",
       "brew_time": 4.0,

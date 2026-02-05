@@ -1,6 +1,8 @@
 """Cat visitor - customers who want tea"""
 import pygame
 import math
+import random
+from datetime import datetime, timedelta
 
 
 class CatVisitor:
@@ -19,6 +21,27 @@ class CatVisitor:
         self.happiness = 0
         self.animation_timer = 0
         self.sprite_loader = sprite_loader
+        
+        # Generate random birthday (cat can be 0-15 years old)
+        self.birthday = self._generate_random_birthday()
+    
+    def _generate_random_birthday(self):
+        """Generate a random birthday for the cat (0-15 years ago)"""
+        today = datetime.now()
+        # Random age between 0 and 15 years (in days)
+        age_in_days = random.randint(0, 15 * 365)
+        birthday = today - timedelta(days=age_in_days)
+        # Format as readable string
+        return birthday.strftime("%B %d, %Y")
+    
+    def get_rect(self):
+        """Get the collision rect for the cat"""
+        x, y = int(self.position[0]), int(self.position[1])
+        return pygame.Rect(x - 40, y - 40, 80, 80)
+    
+    def contains_point(self, point):
+        """Check if a point is inside the cat's area"""
+        return self.get_rect().collidepoint(point)
         
     def update(self, dt):
         self.animation_timer += dt
