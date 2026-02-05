@@ -66,7 +66,7 @@ class Game:
         add_message("Press any key to continue...")
         
         # Wait for user input
-        self._wait_for_input()
+        #self._wait_for_input()
     
     def _wait_for_input(self):
         """Wait for user to press a key or click"""

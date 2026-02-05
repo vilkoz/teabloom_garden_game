@@ -186,6 +186,10 @@ class GameScene:
                 elif self.dragging_object == self.tea_kettle:
                     self.dragging_object.position = [mouse_pos[0] + self.drag_offset[0],
                                                      mouse_pos[1] + self.drag_offset[1]]
+                    # Preview pouring animation when hovering over cha hai
+                    if self.cha_hai.contains_point(mouse_pos) and self.tea_kettle.state == "ready":
+                        if not self.tea_kettle.is_pouring:
+                            self.tea_kettle.start_pouring(target_position=self.cha_hai.position)
                 
                 elif self.dragging_object == self.cha_hai:
                     self.dragging_object.position = [mouse_pos[0] + self.drag_offset[0],
@@ -205,18 +209,32 @@ class GameScene:
                 # Handle hot water kettle drop
                 elif isinstance(self.dragging_object, HotWaterKettle):
                     if self.tea_kettle.contains_point(mouse_pos):
-                        self.tea_kettle.add_water()
-                    self.dragging_object.snap_back()
+                        added = self.tea_kettle.add_water()
+                        if added:
+                            # Start pouring animation and snap back after it completes
+                            # Position kettle above and to the left of tea kettle
+                            self.hot_water_kettle.start_pouring(
+                                snap_back_after=True,
+                                target_position=self.tea_kettle.position
+                            )
+                        else:
+                            self.dragging_object.snap_back()
+                    else:
+                        self.dragging_object.snap_back()
                     self.dragging_object.dragging = False
                 
                 # Handle tea kettle pour to cha hai
                 elif self.dragging_object == self.tea_kettle:
                     if self.cha_hai.contains_point(mouse_pos):
-                        tea_data = self.tea_kettle.pour_to_cha_hai()
+                        tea_data = self.tea_kettle.pour_to_cha_hai(
+                            snap_back_after=True,
+                            target_position=self.cha_hai.position
+                        )
                         if tea_data:
                             self.cha_hai.pour_from_kettle(tea_data)
-                    # Reset position
-                    self.tea_kettle.position = [120, 280]
+                    else:
+                        # Reset position if not dropped on cha hai
+                        self.tea_kettle.snap_back()
                 
                 # Handle cha hai pour to cups
                 elif self.dragging_object == self.cha_hai:
@@ -250,8 +268,9 @@ class GameScene:
         return None
     
     def update(self, dt):
-        # Update tea kettle brewing
+        # Update tea kettle brewing and animations
         self.tea_kettle.update(dt)
+        self.hot_water_kettle.update(dt)
         
         # Update cats
         for cat in self.cat_visitors[:]:
@@ -301,12 +320,20 @@ class GameScene:
         self.screen.blit(cha_ban_label, cha_ban_rect)
         
         # Draw equipment on cha ban (except if being dragged)
-        if self.hot_water_kettle != self.dragging_object:
+        # Draw hot water kettle first if not pouring, or last if pouring (to appear on top)
+        if self.hot_water_kettle != self.dragging_object and not self.hot_water_kettle.is_pouring:
             self.hot_water_kettle.draw(self.screen)
-        if self.tea_kettle != self.dragging_object:
+        # Draw tea kettle first if not pouring, or last if pouring
+        if self.tea_kettle != self.dragging_object and not self.tea_kettle.is_pouring:
             self.tea_kettle.draw(self.screen)
+        # Draw hot water kettle after tea kettle when pouring (on top of tea kettle)
+        if self.hot_water_kettle != self.dragging_object and self.hot_water_kettle.is_pouring:
+            self.hot_water_kettle.draw(self.screen)
         if self.cha_hai != self.dragging_object:
             self.cha_hai.draw(self.screen)
+        # Draw tea kettle after cha hai when pouring (on top of cha hai)
+        if self.tea_kettle != self.dragging_object and self.tea_kettle.is_pouring:
+            self.tea_kettle.draw(self.screen)
         for cup in self.tea_cups:
             if cup != self.dragging_object:
                 cup.draw(self.screen)

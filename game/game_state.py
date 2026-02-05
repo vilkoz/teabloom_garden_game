@@ -23,7 +23,7 @@ class GameState:
         self.best_combo = 0
         
         # Save file path
-        self.save_path = Path(__file__).parent.parent.parent / "data" / "save_data.json"
+        self.save_path = Path(__file__).parent.parent / "data" / "save_data.json"
         
         # Try to load existing save
         self.load_progress()

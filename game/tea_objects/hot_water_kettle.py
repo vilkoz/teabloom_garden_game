@@ -11,12 +11,41 @@ class HotWaterKettle:
         self.width = 100
         self.height = 100
         self.sprite_loader = sprite_loader
+        self.is_pouring = False
+        self.pouring_timer = 0
+        self.pouring_duration = 800  # 800ms pour animation
+        self.should_snap_back_after_pour = False
+        self.pour_target_position = None  # Target to pour into
+    
+    def update(self, dt):
+        """Update animation timers"""
+        if self.is_pouring:
+            self.pouring_timer += dt
+            if self.pouring_timer >= self.pouring_duration:
+                self.is_pouring = False
+                self.pouring_timer = 0
+                # Snap back after animation completes
+                if self.should_snap_back_after_pour:
+                    self.snap_back()
+                    self.should_snap_back_after_pour = False
+    
+    def start_pouring(self, snap_back_after=False, target_position=None):
+        """Start the pouring animation"""
+        self.is_pouring = True
+        self.pouring_timer = 0
+        self.should_snap_back_after_pour = snap_back_after
+        self.pour_target_position = target_position
+        
+        # Position kettle above and to the left of target when pouring
+        if target_position:
+            self.position = [target_position[0] - 50, target_position[1] - 100]
         
     def draw(self, screen):
         x, y = int(self.position[0]), int(self.position[1])
         
-        # Try to get sprite
-        sprite = self.sprite_loader.get_sprite('kettle', 'ready') if self.sprite_loader else None
+        # Try to get sprite - use pouring variant if actively pouring
+        sprite_variant = 'pouring' if self.is_pouring else 'ready'
+        sprite = self.sprite_loader.get_sprite('kettle', sprite_variant) if self.sprite_loader else None
         
         if sprite:
             sprite_rect = sprite.get_rect(center=(x, y))
