@@ -81,7 +81,7 @@ class SpriteLoader:
             return True
             
         except Exception as e:
-            print(f"❌ Error loading grid for '{entity_name}': {e}")
+            print(f"Error loading grid for '{entity_name}': {e}")
             self._create_fallback_sprites(entity_name, variants, sprite_size, render_size)
             return False
     
@@ -196,12 +196,12 @@ def load_all_game_sprites(message_callback=None):
             border_offset=tuple(sprite_config.get('border_offset', [0, 0])),
             grid_offset=tuple(sprite_config.get('grid_offset', [0, 0]))
         )
-        msg = f"✓ Loaded {len(sprite_config['variants'])} sprites for '{sprite_config['name']}'"
+        msg = f"Loaded {len(sprite_config['variants'])} sprites for '{sprite_config['name']}'"
         print(msg)
         if message_callback:
             message_callback(msg)
     
-    success_msg = "✅ All sprite loading complete!"
+    success_msg = "All sprite loading complete!"
     print(f"\n{success_msg}")
     if message_callback:
         message_callback("")

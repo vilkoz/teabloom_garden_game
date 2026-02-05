@@ -50,13 +50,13 @@ class Game:
             self._draw_loading_screen(loading_messages)
         
         # Initial message
-        add_message("🎨 Loading game sprites...")
+        add_message("Loading game sprites...")
         
         # Load all sprites using centralized function
         try:
             load_all_game_sprites(message_callback=add_message)
         except Exception as e:
-            add_message(f"❌ Error loading sprites: {e}")
+            add_message(f"Error loading sprites: {e}")
             add_message("Press any key to exit...")
             self._wait_for_input()
             pygame.quit()
@@ -87,7 +87,7 @@ class Game:
         
         # Title
         title_font = pygame.font.Font(None, 48)
-        title_text = title_font.render("Tea Garden Cats 🐱🍵", True, (100, 70, 50))
+        title_text = title_font.render("Tea Garden Cats", True, (100, 70, 50))
         title_rect = title_text.get_rect(center=(self.width // 2, 80))
         self.screen.blit(title_text, title_rect)
         
@@ -103,8 +103,8 @@ class Game:
         visible_messages = messages[-25:] if len(messages) > 25 else messages  # Show last 25 messages
         
         for i, msg in enumerate(visible_messages):
-            color = (50, 150, 50) if msg.startswith("✓") else (100, 100, 100)
-            if msg.startswith("✅"):
+            color = (50, 150, 50) if msg.startswith("Loaded") else (100, 100, 100)
+            if msg.startswith("All sprite loading complete"):
                 color = (0, 180, 0)
             if msg.startswith("Press"):
                 color = (200, 100, 0)

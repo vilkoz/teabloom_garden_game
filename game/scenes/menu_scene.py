@@ -1,7 +1,10 @@
 """Main menu scene"""
 import pygame
+import random
 from game.ui.button import Button
 from game.ui.text import Text
+from game.sprite_loader import get_sprite_loader
+from game.ui.petal_particle import PetalParticleSystem
 
 
 class MenuScene:
@@ -12,6 +15,12 @@ class MenuScene:
         self.game_state = game_state
         self.width = screen.get_width()
         self.height = screen.get_height()
+        
+        # Sprite loader
+        self.sprite_loader = get_sprite_loader()
+        
+        # Particle system for falling petals
+        self.petal_system = PetalParticleSystem(self.width, self.height, self.sprite_loader)
         
         # Create UI elements
         center_x = self.width // 2
@@ -69,7 +78,10 @@ class MenuScene:
             return "quit"
         
         # Update hearts display
-        self.hearts_text.set_text(f"❤ {self.game_state.hearts}")
+        self.hearts_text.set_text(f"{self.game_state.hearts} Hearts")
+        
+        # Update petal particle system
+        self.petal_system.update(dt)
         
         return None
     
@@ -96,6 +108,10 @@ class MenuScene:
         self.hearts_text.draw(self.screen)
         
         # Draw credits
-        Text.draw_text(self.screen, "Made with ❤ for someone special", 
+        Text.draw_text(self.screen, "Made with love for someone special", 
                       self.width // 2, self.height - 20, 
                       font_size=24, color=(100, 100, 100), center=True)
+
+        # Draw falling petals (behind UI)
+        self.petal_system.draw(self.screen)
+        
