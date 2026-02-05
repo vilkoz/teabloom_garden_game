@@ -41,15 +41,15 @@ class CatVisitor:
         
         elif self.state == "happy":
             # Wait a bit then leave
-            if self.animation_timer > 3000:
-                self.state = "leaving"
-        
-        elif self.state == "disappointed":
             if self.animation_timer > 2000:
                 self.state = "leaving"
         
+        elif self.state == "disappointed":
+            if self.animation_timer > 1500:
+                self.state = "leaving"
+        
         elif self.state == "leaving":
-            self.position[0] += 1
+            self.position[0] += 3
     
     def receive_tea(self, tea_id):
         if self.served:
@@ -165,4 +165,4 @@ class CatVisitor:
             pygame.draw.rect(screen, color, (bar_x, bar_y, patience_width, bar_height))
     
     def is_off_screen(self):
-        return self.position[0] > 900
+        return self.position[0] > 850

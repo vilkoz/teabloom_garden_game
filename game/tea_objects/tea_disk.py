@@ -43,7 +43,7 @@ class TeaDisk:
         screen.blit(text_surface, text_rect)
         
         # Draw brew time
-        time_text = f"{self.tea_data['brew_time']}s"
+        time_text = f"{self.tea_data['brew_time']//1000}s"
         time_surface = font.render(time_text, True, (255, 255, 200))
         time_rect = time_surface.get_rect(center=(x, y + 10))
         

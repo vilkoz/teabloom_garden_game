@@ -118,20 +118,20 @@
     "grid_cols": 2,
     "grid_rows": 2,
     "sprite_size": [
-      290,
-      265
+      355,
+      355
     ],
     "render_size": [
       100,
       100
     ],
     "border_offset": [
-      0,
-      0
+      100,
+      100
     ],
     "grid_offset": [
-      8,
-      8
+      120,
+      120
     ]
   },
   {
@@ -198,16 +198,16 @@
     "grid_cols": 2,
     "grid_rows": 1,
     "sprite_size": [
-      100,
-      100
+      400,
+      400
     ],
     "render_size": [
       100,
       100
     ],
     "border_offset": [
-      0,
-      0
+      145,
+      330
     ],
     "grid_offset": [
       0,

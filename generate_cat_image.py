@@ -1,8 +1,8 @@
 """
-Generate grid sprite sheets using OpenAI DALL-E API
+Generate grid sprite sheets using Google Gemini Imagen API
 """
 import os
-from openai import OpenAI
+from google import genai
 
 BACKGROUND_SUFFIX = ", background must be solid black (#000000) only, no transparency, no checkerboard, no grid pattern, no texture, no gradient"
 
@@ -151,31 +151,30 @@ def generate_entity_grid(entity_name, grid_dir="assets/images/grids/"):
         return None
 
     print(f"\n🧩 Generating single-prompt grid for '{entity_name}' ({len(variants)} variants)...\n")
-    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
     prompt = build_grid_prompt(entity_name, variants)
 
     try:
-        response = client.images.generate(
-            model="dall-e-3",
-            prompt=prompt,
-            size="1024x1024",
-            quality="standard",
-            n=1,
+        response = client.models.generate_content(
+            model='gemini-2.5-flash-image',
+            contents=[prompt],
         )
 
-        image_url = response.data[0].url
-        print(f"\nGrid image generated successfully!")
-        print(f"URL: {image_url}")
+        for part in response.parts:
+            if part.text is not None:
+                print(part.text)
+            elif part.inline_data is not None:
+                image = part.as_image()
+                print(f"\nGrid image generated successfully!")
 
-        import urllib.request
-        os.makedirs(grid_dir, exist_ok=True)
-        grid_path = os.path.join(grid_dir, f"{entity_name}_grid.png")
+                os.makedirs(grid_dir, exist_ok=True)
+                grid_path = os.path.join(grid_dir, f"{entity_name}_grid.png")
 
-        print(f"Downloading grid to {grid_path}...")
-        urllib.request.urlretrieve(image_url, grid_path)
-        print(f"✓ Grid saved to {grid_path}")
+                print(f"Saving grid to {grid_path}...")
+                image.save(grid_path)
+                print(f"✓ Grid saved to {grid_path}")
 
-        return grid_path
+                return grid_path
 
     except Exception as e:
         print(f"Error generating grid: {e}")
@@ -186,10 +185,10 @@ if __name__ == "__main__":
     import sys
     
     # Check if API key is set
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("❌ Error: OPENAI_API_KEY environment variable not set")
-        print("\nPlease set your OpenAI API key:")
-        print("export OPENAI_API_KEY='your-api-key-here'")
+    if not os.environ.get("GOOGLE_API_KEY"):
+        print("❌ Error: GOOGLE_API_KEY environment variable not set")
+        print("\nPlease set your Google API key:")
+        print("export GOOGLE_API_KEY='your-api-key-here'")
         sys.exit(1)
     
     # Get entity name from command line or show usage
@@ -205,6 +204,19 @@ if __name__ == "__main__":
         sys.exit(1)
     
     arg = sys.argv[1].lower()
+    
+    if arg == "prompt":
+        entity = sys.argv[2] if len(sys.argv) > 2 else ""
+        variants = get_entity_variants(entity)
+        if variants:
+            prompt = build_grid_prompt(entity, variants)
+            print(f"\nGenerated prompt for '{entity}':\n")
+            print(prompt)
+            sys.exit(0)
+        else:
+            print(f"❌ Unknown entity: {entity}")
+            sys.exit(1)
+
     
     if arg.startswith("grid_") or arg.startswith("grid:"):
         entity = arg.split("_", 1)[1] if arg.startswith("grid_") else arg.split(":", 1)[1]
@@ -224,6 +236,7 @@ if __name__ == "__main__":
                 grid_path = generate_entity_grid(name)
                 if grid_path:
                     print(f"\n✅ Grid saved to {grid_path}")
+            sys.exit(0)
         print(f"❌ Unknown entity: {arg}")
         print("Available entities:")
         for name in sorted(ENTITY_VARIANTS.keys()):

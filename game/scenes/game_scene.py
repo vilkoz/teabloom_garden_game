@@ -20,6 +20,8 @@ class GameScene:
         with open('data/teas_data.json', 'r') as f:
             tea_data = json.load(f)
             self.all_teas = tea_data if isinstance(tea_data, list) else tea_data.get('teas', [])
+            for tea in self.all_teas:
+                tea['brew_time'] = tea.get('brew_time', 5.0) * 1000.0
         
         # Load cat data
         with open('data/cats_data.json', 'r') as f:
@@ -40,7 +42,7 @@ class GameScene:
         # Cat visiting area (center-right)
         self.cat_visitors = []
         self.cat_spawn_timer = 0
-        self.cat_spawn_interval = 5000  # 5 seconds
+        self.cat_spawn_interval = 30000  # 30 seconds
         
         # Dragging state
         self.dragging_object = None
@@ -167,7 +169,13 @@ class GameScene:
                     self.dragging_object.position[0] = mouse_pos[0] + self.drag_offset[0]
                     self.dragging_object.position[1] = mouse_pos[1] + self.drag_offset[1]
                 
-                # Tea kettle and cha hai don't move during pour, just track mouse
+                elif self.dragging_object == self.tea_kettle:
+                    self.dragging_object.position = [mouse_pos[0] + self.drag_offset[0],
+                                                     mouse_pos[1] + self.drag_offset[1]]
+                
+                elif self.dragging_object == self.cha_hai:
+                    self.dragging_object.position = [mouse_pos[0] + self.drag_offset[0],
+                                                     mouse_pos[1] + self.drag_offset[1]]
         
         elif event.type == pygame.MOUSEBUTTONUP:
             if self.dragging_object:
@@ -193,6 +201,8 @@ class GameScene:
                         tea_data = self.tea_kettle.pour_to_cha_hai()
                         if tea_data:
                             self.cha_hai.pour_from_kettle(tea_data)
+                    # Reset position
+                    self.tea_kettle.position = [120, 280]
                 
                 # Handle cha hai pour to cups
                 elif self.dragging_object == self.cha_hai:
@@ -202,6 +212,8 @@ class GameScene:
                             if tea_data:
                                 cup.fill(tea_data)
                             break
+                    # Reset position
+                    self.cha_hai.position = [120, 400]
                 
                 # Handle cup drop on cat
                 elif isinstance(self.dragging_object, TeaCup):
@@ -277,9 +289,10 @@ class GameScene:
         # Draw equipment on cha ban (except if being dragged)
         if self.hot_water_kettle != self.dragging_object:
             self.hot_water_kettle.draw(self.screen)
-        # Always draw tea kettle and cha hai (they stay in place during pour)
-        self.tea_kettle.draw(self.screen)
-        self.cha_hai.draw(self.screen)
+        if self.tea_kettle != self.dragging_object:
+            self.tea_kettle.draw(self.screen)
+        if self.cha_hai != self.dragging_object:
+            self.cha_hai.draw(self.screen)
         for cup in self.tea_cups:
             if cup != self.dragging_object:
                 cup.draw(self.screen)
@@ -334,22 +347,4 @@ class GameScene:
         
         # Draw dragged object last (on top of everything)
         if self.dragging_object:
-            if isinstance(self.dragging_object, (TeaDisk, HotWaterKettle, TeaCup)):
-                self.dragging_object.draw(self.screen)
-            
-            # Draw pour animation for tea kettle and cha hai
-            elif self.dragging_object == self.tea_kettle:
-                mouse_pos = pygame.mouse.get_pos()
-                # Draw dotted line from kettle to cursor
-                start_pos = self.tea_kettle.position
-                pygame.draw.line(self.screen, (200, 150, 100), start_pos, mouse_pos, 3)
-                # Draw arrow at cursor
-                pygame.draw.circle(self.screen, (200, 150, 100), mouse_pos, 5)
-                
-            elif self.dragging_object == self.cha_hai:
-                mouse_pos = pygame.mouse.get_pos()
-                # Draw dotted line from cha hai to cursor
-                start_pos = self.cha_hai.position
-                pygame.draw.line(self.screen, (150, 200, 100), start_pos, mouse_pos, 3)
-                # Draw arrow at cursor
-                pygame.draw.circle(self.screen, (150, 200, 100), mouse_pos, 5)
+            self.dragging_object.draw(self.screen)

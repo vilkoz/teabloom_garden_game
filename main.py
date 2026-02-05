@@ -138,8 +138,8 @@ class Game:
     def run(self):
         """Main game loop"""
         while self.running:
-            # Calculate delta time
-            dt = self.clock.tick(self.fps) / 1000.0  # Convert to seconds
+            # Calculate delta time in milliseconds
+            dt = self.clock.tick(self.fps)
             
             # Get current scene
             scene = self.scenes.get(self.current_scene)
