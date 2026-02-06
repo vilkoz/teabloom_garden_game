@@ -21,6 +21,7 @@ class CatVisitor:
         self.served = False
         self.happiness = 0
         self.animation_timer = 0
+        self.move_frame_duration = 200
         self.sprite_loader = sprite_loader
         self.particle_system = particle_system
         self.sound_manager = get_sound_manager()
@@ -112,16 +113,21 @@ class CatVisitor:
         
         # Map game state to sprite variant
         if self.state == "happy":
-            sprite_variant = "happy"
+            base_variant = "happy"
         elif self.state == "disappointed":
-            sprite_variant = "disappointed"
+            base_variant = "disappointed"
         elif self.patience < 40:
-            sprite_variant = "impatient"
+            base_variant = "impatient"
         else:
-            sprite_variant = "normal"
-        
+            base_variant = "normal"
+
         # Try to get cat sprite
         cat_id = self.cat_data['id']
+        sprite_variant = base_variant
+        if self.state in ("arriving", "leaving"):
+            frame = 1 + int(self.animation_timer / self.move_frame_duration) % 2
+            sprite_variant = f"moving{frame}"
+
         sprite = self.sprite_loader.get_sprite(cat_id, sprite_variant) if self.sprite_loader else None
         
         if sprite:

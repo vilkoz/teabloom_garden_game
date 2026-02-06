@@ -106,25 +106,27 @@
       "normal",
       "happy",
       "impatient",
-      "disappointed"
+      "disappointed",
+      "moving1",
+      "moving2"
     ],
-    "grid_cols": 2,
+    "grid_cols": 3,
     "grid_rows": 2,
     "sprite_size": [
-      365,
-      376
+      315,
+      247
     ],
     "render_size": [
       100,
       100
     ],
     "border_offset": [
-      110,
-      101
+      65,
+      202
     ],
     "grid_offset": [
-      73,
-      70
+      0,
+      120
     ]
   },
   {
@@ -184,25 +186,27 @@
       "normal",
       "happy",
       "impatient",
-      "disappointed"
+      "disappointed",
+      "moving1",
+      "moving2"
     ],
-    "grid_cols": 2,
+    "grid_cols": 3,
     "grid_rows": 2,
     "sprite_size": [
-      411,
-      410
+      302,
+      285
     ],
     "render_size": [
       100,
       100
     ],
     "border_offset": [
-      92,
-      92
+      33,
+      185
     ],
     "grid_offset": [
       6,
-      22
+      65
     ]
   },
   {
@@ -235,25 +239,27 @@
       "normal",
       "happy",
       "impatient",
-      "disappointed"
+      "disappointed",
+      "moving1",
+      "moving2"
     ],
-    "grid_cols": 2,
+    "grid_cols": 3,
     "grid_rows": 2,
     "sprite_size": [
-      359,
-      401
+      310,
+      243
     ],
     "render_size": [
       100,
       100
     ],
     "border_offset": [
-      153,
-      111
+      50,
+      203
     ],
     "grid_offset": [
-      70,
-      70
+      0,
+      141
     ]
   },
   {
@@ -262,25 +268,27 @@
       "normal",
       "happy",
       "impatient",
-      "disappointed"
+      "disappointed",
+      "moving1",
+      "moving2"
     ],
-    "grid_cols": 2,
+    "grid_cols": 3,
     "grid_rows": 2,
     "sprite_size": [
-      358,
-      383
+      290,
+      258
     ],
     "render_size": [
       100,
       100
     ],
     "border_offset": [
-      154,
-      154
+      60,
+      204
     ],
     "grid_offset": [
-      0,
-      0
+      10,
+      90
     ]
   },
   {
@@ -315,25 +323,27 @@
       "normal",
       "happy",
       "impatient",
-      "disappointed"
+      "disappointed",
+      "moving1",
+      "moving2"
     ],
-    "grid_cols": 2,
+    "grid_cols": 3,
     "grid_rows": 2,
     "sprite_size": [
-      450,
-      450
+      332,
+      300
     ],
     "render_size": [
       100,
       100
     ],
     "border_offset": [
-      55,
-      50
+      0,
+      200
     ],
     "grid_offset": [
-      0,
-      0
+      14,
+      70
     ]
   },
   {
@@ -525,25 +535,27 @@
       "normal",
       "happy",
       "impatient",
-      "disappointed"
+      "disappointed",
+      "moving1",
+      "moving2"
     ],
-    "grid_cols": 2,
+    "grid_cols": 3,
     "grid_rows": 2,
     "sprite_size": [
-      431,
-      510
+      303,
+      270
     ],
     "render_size": [
       100,
       100
     ],
     "border_offset": [
-      81,
-      2
+      55,
+      120
     ],
     "grid_offset": [
-      0,
-      0
+      10,
+      230
     ]
   },
   {

@@ -16,37 +16,49 @@ ENTITY_VARIANTS = {
         "normal: orange tabby with dark stripes, friendly expression",
         "happy: eyes closed in contentment",
         "impatient: ears back, worried expression",
-        "disappointed: sad droopy eyes",
+        "disappointed: sad droopy eyes, crying expression",
+        "moving1: walking frame 1, front paw lifted slightly, tail swish",
+        "moving2: walking frame 2, alternate paw lifted, tail swish",
     ],
     "luna": [
         "normal: black fur with white paws and chest marking, big yellow eyes",
         "happy: eyes closed in contentment",
         "impatient: ears back, worried yellow eyes",
-        "disappointed: sad droopy yellow eyes",
+        "disappointed: sad droopy yellow eyes, crying expression",
+        "moving1: walking frame 1, front paw lifted slightly, tail swish",
+        "moving2: walking frame 2, alternate paw lifted, tail swish",
     ],
     "tofu": [
         "normal: pure white fluffy fur, big blue eyes, sweet shy expression",
         "happy: eyes closed, content smile",
         "impatient: ears back, worried blue eyes",
-        "disappointed: sad droopy blue eyes",
+        "disappointed: sad droopy blue eyes, crying expression",
+        "moving1: walking frame 1, front paw lifted slightly, tail swish",
+        "moving2: walking frame 2, alternate paw lifted, tail swish",
     ],
     "ginger": [
         "normal: calico pattern orange black white, friendly eyes",
         "happy: eyes closed in joy",
         "impatient: ears back, anxious expression",
-        "disappointed: sad eyes",
+        "disappointed: sad eyes, crying expression",
+        "moving1: walking frame 1, front left paw lifted slightly, tail swish",
+        "moving2: walking frame 2, front right paw lifted, tail swish",
     ],
     "petya": [
         "normal: large fluffy grey Siberian, wise calm expression",
         "happy: eyes closed peacefully",
         "impatient: ears slightly back, concerned expression",
-        "disappointed: sad droopy eyes",
+        "disappointed: sad droopy eyes, crying expression",
+        "moving1: walking frame 1, front paw lifted slightly, tail swish",
+        "moving2: walking frame 2, alternate paw lifted, tail swish",
     ],
     "lapilaps": [
         "normal: cream/tan Siamese with dark brown points, blue almond eyes, pink collar",
         "happy: eyes closed, content expression",
         "impatient: worried blue eyes, ears back",
-        "disappointed: sad blue eyes",
+        "disappointed: sad blue eyes, crying expression",
+        "moving1: walking frame 1, front paw lifted slightly, tail swish",
+        "moving2: walking frame 2, alternate paw lifted, tail swish",
     ],
     "gaiwan": [
         "empty: white porcelain with blue floral patterns, bowl lid saucer",
@@ -245,6 +257,13 @@ if __name__ == "__main__":
             sys.exit(0)
         if arg == "all":
             for name in sorted(ENTITY_VARIANTS.keys()):
+                print(f"Generating  - {name}")
+                grid_path = generate_entity_grid(name)
+                if grid_path:
+                    print(f"\n✅ Grid saved to {grid_path}")
+            sys.exit(0)
+        if arg == "cats":
+            for name in ["mimi", "luna", "tofu", "ginger", "petya", "lapilaps"]:
                 print(f"Generating  - {name}")
                 grid_path = generate_entity_grid(name)
                 if grid_path:
