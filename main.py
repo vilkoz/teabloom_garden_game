@@ -6,6 +6,7 @@ from game.scenes.menu_scene import MenuScene
 from game.scenes.game_scene import GameScene
 from game.scenes.stats_scene import StatsScene
 from game.sprite_loader import load_all_game_sprites
+from game.sound_manager import get_sound_manager, SoundEffect
 
 
 class Game:
@@ -27,14 +28,21 @@ class Game:
         # Show loading screen and load sprites
         self._load_sprites_with_screen()
         
+        # Initialize sound system
+        self.sound_manager = get_sound_manager()
+        # Start background music with fade-in
+        self.sound_manager.play_music(SoundEffect.BACKGROUND_MUSIC, loops=-1, fade_ms=1000)
+        self.sound_manager.play_music(SoundEffect.AMBIENT_GARDEN, loops=-1, fade_ms=1000)
+        
         # Game state
         self.game_state = GameState()
         
         # Scenes
         self.scenes = {
+            # initialize only first scene
             'menu': MenuScene(self.screen, self.game_state),
-            'game': GameScene(self.screen, self.game_state),
-            'stats': StatsScene(self.screen, self.game_state)
+            'game': GameScene,
+            'stats': StatsScene,
         }
         
         self.current_scene = 'menu'
@@ -127,9 +135,9 @@ class Game:
         
         # Scenes
         self.scenes = {
-            'menu': MenuScene(self.screen, self.game_state),
-            'game': GameScene(self.screen, self.game_state),
-            'stats': StatsScene(self.screen, self.game_state)
+            'menu': MenuScene,
+            'game': GameScene,
+            'stats': StatsScene
         }
         
         self.current_scene = 'menu'
@@ -161,6 +169,8 @@ class Game:
                         # Recreate scene to reset state
                         if result == 'game':
                             self.scenes['game'] = GameScene(self.screen, self.game_state)
+                        elif result == 'stats':
+                            self.scenes['stats'] = StatsScene(self.screen, self.game_state)
             
             # Update scene
             if self.running:
@@ -173,6 +183,8 @@ class Game:
                         # Recreate scene to reset state
                         if result == 'game':
                             self.scenes['game'] = GameScene(self.screen, self.game_state)
+                        elif result == 'stats':
+                            self.scenes['stats'] = StatsScene(self.screen, self.game_state)
             
             # Draw scene
             scene.draw()

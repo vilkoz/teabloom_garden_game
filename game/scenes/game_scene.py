@@ -2,7 +2,9 @@
 import pygame
 import random
 import json
+from pygame_emojis import load_emoji
 from ..sprite_loader import get_sprite_loader
+from ..sound_manager import get_sound_manager, SoundEffect
 from ..tea_objects import TeaDisk, TeaKettle, HotWaterKettle, ChaHai, TeaCup, CatVisitor
 from ..tea_objects.tea_god import TeaGod
 from ..ui.tooltip import Tooltip
@@ -18,6 +20,9 @@ class GameScene:
         
         # Get sprite loader
         self.sprite_loader = get_sprite_loader()
+        
+        # Get sound manager
+        self.sound_manager = get_sound_manager()
         
         # Load tea data
         with open('data/teas_data.json', 'r') as f:
@@ -55,6 +60,7 @@ class GameScene:
         
         # UI
         self.menu_button_rect = pygame.Rect(self.width - 120, 10, 110, 40)
+        self.mute_button_rect = pygame.Rect(self.width - 60, self.height - 50, 50, 40)
         self.tooltip = Tooltip()
         self.hovered_cat = None
         self.hovered_tea_cup = None
@@ -108,15 +114,21 @@ class GameScene:
             cat = CatVisitor(cat_data, (slot_x, slot_y), slot_index, self.sprite_loader, self.particle_system)
             cat.position = [850, slot_y]  # Start off-screen right
             self.cat_visitors.append(cat)
+            self.sound_manager.play_sound(SoundEffect.CAT_ARRIVE)
     
 
     
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
-            
-            # Check menu button
+                        # Check mute button
+            if self.mute_button_rect.collidepoint(mouse_pos):
+                self.sound_manager.toggle_music()
+                self.sound_manager.play_sound(SoundEffect.BUTTON_CLICK)
+                return None
+                        # Check menu button
             if self.menu_button_rect.collidepoint(mouse_pos):
+                self.sound_manager.play_sound(SoundEffect.BUTTON_CLICK)
                 return "menu"
             
             # Check for petting cats
@@ -125,6 +137,8 @@ class GameScene:
                 if cat_rect.collidepoint(mouse_pos) and cat.can_pet():
                     bonus = cat.pet()
                     if bonus > 0:
+                        self.sound_manager.play_sound(SoundEffect.CAT_PET)
+                        self.sound_manager.play_sound(SoundEffect.HEART_COLLECT)
                         self.game_state.add_hearts(bonus)
                         return None
             
@@ -134,6 +148,7 @@ class GameScene:
                     self.dragging_object = disk
                     disk.dragging = True
                     self.drag_offset = (disk.position[0] - mouse_pos[0], disk.position[1] - mouse_pos[1])
+                    self.sound_manager.play_sound(SoundEffect.PICKUP)
                     return None
             
             # Check for dragging hot water kettle
@@ -142,6 +157,7 @@ class GameScene:
                 self.hot_water_kettle.dragging = True
                 self.drag_offset = (self.hot_water_kettle.position[0] - mouse_pos[0], 
                                    self.hot_water_kettle.position[1] - mouse_pos[1])
+                self.sound_manager.play_sound(SoundEffect.PICKUP)
                 return None
             
             # Check for dragging tea kettle (to pour to cha hai)
@@ -149,6 +165,7 @@ class GameScene:
                 self.dragging_object = self.tea_kettle
                 self.drag_offset = (self.tea_kettle.position[0] - mouse_pos[0], 
                                    self.tea_kettle.position[1] - mouse_pos[1])
+                self.sound_manager.play_sound(SoundEffect.PICKUP)
                 return None
             
             # Check for dragging cha hai (to pour to cups)
@@ -156,6 +173,7 @@ class GameScene:
                 self.dragging_object = self.cha_hai
                 self.drag_offset = (self.cha_hai.position[0] - mouse_pos[0], 
                                    self.cha_hai.position[1] - mouse_pos[1])
+                self.sound_manager.play_sound(SoundEffect.PICKUP)
                 return None
             
             # Check for dragging filled cups
@@ -164,6 +182,7 @@ class GameScene:
                     self.dragging_object = cup
                     cup.dragging = True
                     self.drag_offset = (cup.position[0] - mouse_pos[0], cup.position[1] - mouse_pos[1])
+                    self.sound_manager.play_sound(SoundEffect.PICKUP)
                     return None
         
         elif event.type == pygame.MOUSEMOTION:
@@ -233,7 +252,9 @@ class GameScene:
                                 snap_back_after=True,
                                 target_position=self.tea_kettle.position
                             )
+                            self.sound_manager.play_sound(SoundEffect.WATER_POUR)
                         else:
+                            self.sound_manager.play_sound(SoundEffect.ERROR)
                             self.dragging_object.snap_back()
                     else:
                         self.dragging_object.snap_back()
@@ -247,6 +268,7 @@ class GameScene:
                             self.tea_kettle.tea_data = None
                             self.tea_kettle.state = self.tea_kettle.STATE_EMPTY
                             self.tea_god.receive_leaves()
+                            self.sound_manager.play_sound(SoundEffect.LEAVES_DISPOSE)
                         self.tea_kettle.snap_back()
                     elif self.cha_hai.contains_point(mouse_pos):
                         tea_data = self.tea_kettle.pour_to_cha_hai(
@@ -255,6 +277,7 @@ class GameScene:
                         )
                         if tea_data:
                             self.cha_hai.pour_from_kettle(tea_data)
+                            self.sound_manager.play_sound(SoundEffect.TEA_POUR)
                     else:
                         # Reset position if not dropped on cha hai
                         self.tea_kettle.snap_back()
@@ -266,6 +289,7 @@ class GameScene:
                         if self.cha_hai.tea_data:
                             self.cha_hai.tea_data = None
                             self.tea_god.receive_tea()
+                            self.sound_manager.play_sound(SoundEffect.LEAVES_DISPOSE)
                         self.cha_hai.position = [120, 400]
                     else:
                         for cup in self.tea_cups:
@@ -273,6 +297,7 @@ class GameScene:
                                 tea_data = self.cha_hai.pour_to_cup()
                                 if tea_data:
                                     cup.fill(tea_data)
+                                    self.sound_manager.play_sound(SoundEffect.CUP_FILL)
                                 break
                         # Reset position
                         self.cha_hai.position = [120, 400]
@@ -285,6 +310,7 @@ class GameScene:
                         if tea_data:
                             self.dragging_object.empty()
                             self.tea_god.receive_tea()
+                            self.sound_manager.play_sound(SoundEffect.LEAVES_DISPOSE)
                     else:
                         # Check cat serving
                         for cat in self.cat_visitors:
@@ -294,7 +320,15 @@ class GameScene:
                                 if tea_data:
                                     result = cat.receive_tea(tea_data['id'])
                                     if result:
+                                        self.game_state.record_serve(result['match'])
                                         self.game_state.add_hearts(result['hearts'])
+                                        # Play appropriate sound based on result
+                                        if result['match']:
+                                            self.sound_manager.play_sound(SoundEffect.CAT_HAPPY)
+                                            self.sound_manager.play_sound(SoundEffect.SUCCESS)
+                                        else:
+                                            self.sound_manager.play_sound(SoundEffect.CAT_DISAPPOINTED)
+                                        self.sound_manager.play_sound(SoundEffect.HEART_COLLECT)
                                 break
                     
                     self.dragging_object.snap_back()
@@ -306,6 +340,9 @@ class GameScene:
         return None
     
     def update(self, dt):
+        # Update play time statistics
+        self.game_state.update_playtime(dt / 1000.0)  # Convert ms to seconds
+        
         # Update tea kettle brewing and animations
         self.tea_kettle.update(dt)
         self.hot_water_kettle.update(dt)
@@ -430,6 +467,15 @@ class GameScene:
         menu_text = menu_font.render("Menu", True, (50, 50, 50))
         menu_rect = menu_text.get_rect(center=self.menu_button_rect.center)
         self.screen.blit(menu_text, menu_rect)
+        
+        # Draw mute button
+        mute_color = (150, 150, 150) if not self.sound_manager.music_enabled else (200, 200, 200)
+        pygame.draw.rect(self.screen, mute_color, self.mute_button_rect, border_radius=5)
+        pygame.draw.rect(self.screen, (100, 100, 100), self.mute_button_rect, 2, border_radius=5)
+        
+        mute_icon = "🔇" if not self.sound_manager.music_enabled else "🔊"
+        emoji = load_emoji(mute_icon, size=24)
+        self.screen.blit(emoji, (self.mute_button_rect.centerx - 12, self.mute_button_rect.centery - 12))
         
         # Draw instructions
         instructions = [

@@ -2,6 +2,7 @@
 import pygame
 from game.ui.button import Button
 from game.ui.text import Text
+from game.sound_manager import get_sound_manager, SoundEffect
 
 
 class StatsScene:
@@ -12,6 +13,9 @@ class StatsScene:
         self.game_state = game_state
         self.width = screen.get_width()
         self.height = screen.get_height()
+        
+        # Sound manager
+        self.sound_manager = get_sound_manager()
         
         # Back button
         self.back_button = Button(self.width // 2 - 100, self.height - 80, 
@@ -30,6 +34,7 @@ class StatsScene:
         mouse_pressed = pygame.mouse.get_pressed()[0]
         
         if self.back_button.update(mouse_pos, mouse_pressed):
+            self.sound_manager.play_sound(SoundEffect.BUTTON_CLICK)
             return "menu"
         
         return None

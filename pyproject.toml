@@ -9,5 +9,7 @@ dependencies = [
     "openai>=2.16.0",
     "pillow>=12.1.0",
     "pygame>=2.5.0",
+    "pygame-emojis>=0.2.0",
     "python-dotenv>=1.2.1",
 ]
+scripts = { "tea-garden-cats" = "main:main" }

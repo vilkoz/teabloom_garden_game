@@ -3,6 +3,7 @@ import pygame
 import math
 import random
 from datetime import datetime, timedelta
+from ..sound_manager import get_sound_manager, SoundEffect
 
 
 class CatVisitor:
@@ -22,6 +23,8 @@ class CatVisitor:
         self.animation_timer = 0
         self.sprite_loader = sprite_loader
         self.particle_system = particle_system
+        self.sound_manager = get_sound_manager()
+        self._leaving_sound_played = False
         
         # Generate random birthday (cat can be 0-15 years old)
         self.birthday = self._generate_random_birthday()
@@ -73,6 +76,9 @@ class CatVisitor:
                 self.state = "leaving"
         
         elif self.state == "leaving":
+            if not self._leaving_sound_played:
+                self.sound_manager.play_sound(SoundEffect.CAT_LEAVE)
+                self._leaving_sound_played = True
             self.position[0] += 3
     
     def receive_tea(self, tea_id):

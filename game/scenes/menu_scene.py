@@ -1,10 +1,12 @@
 """Main menu scene"""
 import pygame
 import random
+from pygame_emojis import load_emoji
 from game.ui.button import Button
 from game.ui.text import Text
 from game.sprite_loader import get_sprite_loader
 from game.ui.petal_particle import PetalParticleSystem
+from game.sound_manager import get_sound_manager, SoundEffect
 
 
 class MenuScene:
@@ -18,6 +20,9 @@ class MenuScene:
         
         # Sprite loader
         self.sprite_loader = get_sprite_loader()
+        
+        # Sound manager
+        self.sound_manager = get_sound_manager()
         
         # Particle system for falling petals
         self.petal_system = PetalParticleSystem(self.width, self.height, self.sprite_loader)
@@ -45,6 +50,9 @@ class MenuScene:
         self.hearts_text = Text(f"Hearts: {self.game_state.hearts}", 
                                20, 20, font_size=36, color=(255, 0, 127), bold=True)
         
+        # Mute button
+        self.mute_button_rect = pygame.Rect(self.width - 60, self.height - 50, 50, 40)
+        
         self.next_scene = None
     
     def handle_event(self, event):
@@ -55,11 +63,20 @@ class MenuScene:
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
             
+            # Check mute button
+            if self.mute_button_rect.collidepoint(mouse_pos):
+                self.sound_manager.toggle_music()
+                self.sound_manager.play_sound(SoundEffect.BUTTON_CLICK)
+                return None
+            
             if self.play_button.update(mouse_pos, True):
+                self.sound_manager.play_sound(SoundEffect.BUTTON_CLICK)
                 return "game"
             elif self.stats_button.update(mouse_pos, True):
+                self.sound_manager.play_sound(SoundEffect.BUTTON_CLICK)
                 return "stats"
             elif self.quit_button.update(mouse_pos, True):
+                self.sound_manager.play_sound(SoundEffect.BUTTON_CLICK)
                 return "quit"
         
         return None
@@ -106,6 +123,15 @@ class MenuScene:
         
         # Draw hearts
         self.hearts_text.draw(self.screen)
+        
+        # Draw mute button
+        mute_color = (150, 150, 150) if not self.sound_manager.music_enabled else (200, 200, 200)
+        pygame.draw.rect(self.screen, mute_color, self.mute_button_rect, border_radius=5)
+        pygame.draw.rect(self.screen, (100, 100, 100), self.mute_button_rect, 2, border_radius=5)
+        
+        mute_icon = "🔇" if not self.sound_manager.music_enabled else "🔊"
+        emoji = load_emoji(mute_icon, size=24)
+        self.screen.blit(emoji, (self.mute_button_rect.centerx - 12, self.mute_button_rect.centery - 12))
         
         # Draw credits
         Text.draw_text(self.screen, "Made with love for someone special", 
