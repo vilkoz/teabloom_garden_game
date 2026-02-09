@@ -9,6 +9,7 @@ from ..tea_objects import TeaDisk, TeaKettle, HotWaterKettle, ChaHai, TeaCup, Ca
 from ..tea_objects.tea_god import TeaGod
 from ..ui.tooltip import Tooltip
 from ..ui.particle_system import ParticleSystem
+from ..ui.popup_notification import PopupNotification
 
 
 class GameScene:
@@ -70,6 +71,8 @@ class GameScene:
         
         # Spawn first cat
         self._spawn_cat()
+        # Popup notifications
+        self.popup = PopupNotification((self.width, self.height), self.particle_system, self.sprite_loader)
     
     def _init_tea_drawer(self):
         """Initialize tea disks in the drawer"""
@@ -119,6 +122,8 @@ class GameScene:
 
     
     def handle_event(self, event):
+        # let popup consume events first
+        self.popup.handle_event(event)
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
                         # Check mute button
@@ -326,6 +331,11 @@ class GameScene:
                                         if result['match']:
                                             self.sound_manager.play_sound(SoundEffect.CAT_HAPPY)
                                             self.sound_manager.play_sound(SoundEffect.SUCCESS)
+                                            # Show happy popup if defined for this cat
+                                            happy_text = cat.cat_data.get('happy_popup_text')
+                                            if happy_text:
+                                                popup_pos = (int(cat.position[0]), int(cat.position[1]) - 60)
+                                                self.popup.open(happy_text, position=popup_pos)
                                         else:
                                             self.sound_manager.play_sound(SoundEffect.CAT_DISAPPOINTED)
                                         self.sound_manager.play_sound(SoundEffect.HEART_COLLECT)
@@ -348,6 +358,9 @@ class GameScene:
         self.hot_water_kettle.update(dt)
         self.tea_god.update(dt)
         
+        # Update popup (may spawn particles) before particle update
+        self.popup.update(dt)
+
         # Update particles
         self.particle_system.update(dt)
         
@@ -443,8 +456,7 @@ class GameScene:
         for cat in self.cat_visitors:
             cat.draw(self.screen)
         
-        # Draw particles
-        self.particle_system.draw(self.screen)
+        # particles drawn later so popup hearts appear above other UI
         
         # Draw hearts counter
         hearts_font = pygame.font.Font(None, 28)
@@ -517,3 +529,9 @@ class GameScene:
                 "Brew Time": f"{tea_data.get('brew_time', 0) / 1000:.1f}s"
             }
             self.tooltip.draw(self.screen, mouse_pos, tea_data['name'], tooltip_info)
+
+        # Draw popup (above most UI)
+        self.popup.draw(self.screen)
+
+        # Draw particles last so hearts spawned by popup appear above popup
+        self.particle_system.draw(self.screen)

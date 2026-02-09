@@ -55,7 +55,8 @@
       "favorite_tea": "violet_ya_bao",
       "unlocked": false,
       "unlock_requirement": 100,
-      "color": [220, 180, 160]
+      "color": [220, 180, 160],
+      "happy_popup_text": "I love my minimaps! Meow~"
     }
   ]
 }
