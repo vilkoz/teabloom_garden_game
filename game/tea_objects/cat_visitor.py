@@ -133,6 +133,9 @@ class CatVisitor:
         if sprite:
             # Draw sprite centered
             sprite_rect = sprite.get_rect(center=(x, y))
+            if self.state == "arriving":
+                # mirror sprite when arriving
+                sprite = pygame.transform.flip(sprite, True, False)
             screen.blit(sprite, sprite_rect)
         else:
             # Fallback rendering
