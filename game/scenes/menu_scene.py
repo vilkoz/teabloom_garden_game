@@ -7,6 +7,7 @@ from game.ui.text import Text
 from game.sprite_loader import get_sprite_loader
 from game.ui.petal_particle import PetalParticleSystem
 from game.sound_manager import get_sound_manager, SoundEffect
+from game.ui.procedural_background import ProceduralBackground
 
 
 class MenuScene:
@@ -26,6 +27,9 @@ class MenuScene:
         
         # Particle system for falling petals
         self.petal_system = PetalParticleSystem(self.width, self.height, self.sprite_loader)
+
+        # Procedural background
+        self.background = ProceduralBackground(self.width, self.height, seed=random.randint(0, 10000))
         
         # Create UI elements
         center_x = self.width // 2
@@ -99,16 +103,18 @@ class MenuScene:
         
         # Update petal particle system
         self.petal_system.update(dt)
+        # Update procedural background animations
+        self.background.update(dt)
         
         return None
     
     def draw(self):
         """Draw the menu"""
-        # Background
-        self.screen.fill((245, 222, 179))  # Wheat color
+        # Background (procedural greenery)
+        self.background.draw(self.screen)
         
         # Draw decorative elements
-        pygame.draw.rect(self.screen, (210, 180, 140), (0, 0, self.width, 100))
+        pygame.draw.rect(self.screen, (210, 180, 140), (0, 0, self.width, 50))
         pygame.draw.rect(self.screen, (210, 180, 140), 
                         (0, self.height - 50, self.width, 50))
         

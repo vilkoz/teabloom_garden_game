@@ -8,6 +8,7 @@ from ..sound_manager import get_sound_manager, SoundEffect
 from ..tea_objects import TeaDisk, TeaKettle, HotWaterKettle, ChaHai, TeaCup, CatVisitor
 from ..tea_objects.tea_god import TeaGod
 from ..ui.tooltip import Tooltip
+from ..ui.petal_particle import PetalParticleSystem
 from ..ui.particle_system import ParticleSystem
 from ..ui.popup_notification import PopupNotification
 
@@ -68,6 +69,8 @@ class GameScene:
         
         # Particle system
         self.particle_system = ParticleSystem(self.sprite_loader)
+        # Petal (bloom) particle system (like menu scene)
+        self.petal_system = PetalParticleSystem(self.width, self.height, self.sprite_loader)
         
         # Spawn first cat
         self._spawn_cat()
@@ -363,6 +366,8 @@ class GameScene:
 
         # Update particles
         self.particle_system.update(dt)
+        # Update petal (bloom) particles
+        self.petal_system.update(dt)
         
         # Update cats
         for cat in self.cat_visitors[:]:
@@ -529,6 +534,9 @@ class GameScene:
                 "Brew Time": f"{tea_data.get('brew_time', 0) / 1000:.1f}s"
             }
             self.tooltip.draw(self.screen, mouse_pos, tea_data['name'], tooltip_info)
+
+        # Draw falling petals (bloom) similar to menu scene
+        self.petal_system.draw(self.screen)
 
         # Draw popup (above most UI)
         self.popup.draw(self.screen)
