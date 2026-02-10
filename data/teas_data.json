@@ -76,17 +76,6 @@
       "unlocked": false,
       "unlock_cost": 50,
       "color": [139, 69, 19]
-    },
-    {
-      "id": "golden_monkey",
-      "name": "Golden Monkey Black Tea",
-      "category": "red_tea",
-      "brew_time": 4.0,
-      "heart_value": 3,
-      "rarity": "rare",
-      "unlocked": false,
-      "unlock_cost": 75,
-      "color": [184, 134, 11]
     }
   ],
   "categories": {

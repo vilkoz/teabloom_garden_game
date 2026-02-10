@@ -33,21 +33,50 @@ class MenuScene:
         
         # Create UI elements
         center_x = self.width // 2
-        self.title = Text("Tea Garden Cats", center_x, 150, font_size=72, 
-                         color=(139, 69, 19), bold=True)
-        self.subtitle = Text("A cozy game about serving tea to cats", 
-                           center_x, 220, font_size=28, color=(100, 100, 100))
-        
-        # Buttons
+
+        # Decorative rect height (top and bottom)
+        decorative_h = 50
+
+        # Button sizing and spacing requirements
         button_width = 300
         button_height = 60
+        spacing = 20  # desired spacing between buttons
+
+        # Prefer using the configured logo sprite for the title; fall back to text
+        logo = self.sprite_loader.get_sprite('logo', 'single')
+        if logo is not None:
+            self.logo_sprite = logo
+            logo_h = logo.get_height()
+            self.title = None
+        else:
+            self.logo_sprite = None
+            # approximate logo height using font size when sprite missing
+            logo_h = 72
+            self.title = Text("Tea Garden Cats", center_x, 150, font_size=72, 
+                              color=(139, 69, 19), bold=True)
+
+        # Compute vertical layout so that:
+        # - spacing between buttons == `spacing`
+        # - the gap from top decorative rect to logo, logo to buttons, and buttons to bottom decorative rect are equal
+        available_h = self.height - 2 * decorative_h
+        buttons_total_h = 3 * button_height + 2 * spacing
+        # m is the equal margin (top to logo, between logo and buttons, bottom after buttons)
+        m = (available_h - logo_h - buttons_total_h) // 3
+        if m < 0:
+            m = spacing
+
+        # Positions
+        logo_top = decorative_h + m
+        self.logo_center_y = int(logo_top + logo_h / 2)
+
+        first_button_y = logo_top + logo_h + m
         button_x = (self.width - button_width) // 2
-        
-        self.play_button = Button(button_x, 300, button_width, button_height, 
+
+        self.play_button = Button(button_x, int(first_button_y), button_width, button_height, 
                                   "Play", color=(144, 238, 144))
-        self.stats_button = Button(button_x, 380, button_width, button_height, 
+        self.stats_button = Button(button_x, int(first_button_y + button_height + spacing), button_width, button_height, 
                                    "Statistics", color=(135, 206, 250))
-        self.quit_button = Button(button_x, 460, button_width, button_height, 
+        self.quit_button = Button(button_x, int(first_button_y + 2 * (button_height + spacing)), button_width, button_height, 
                                   "Quit", color=(255, 182, 193))
         
         # Display hearts
@@ -55,7 +84,7 @@ class MenuScene:
                                20, 20, font_size=36, color=(255, 0, 127), bold=True)
         
         # Mute button
-        self.mute_button_rect = pygame.Rect(self.width - 60, self.height - 50, 50, 40)
+        self.mute_button_rect = pygame.Rect(self.width - 60, self.height - 100, 50, 40)
         
         self.next_scene = None
     
@@ -114,13 +143,19 @@ class MenuScene:
         self.background.draw(self.screen)
         
         # Draw decorative elements
-        pygame.draw.rect(self.screen, (210, 180, 140), (0, 0, self.width, 50))
-        pygame.draw.rect(self.screen, (210, 180, 140), 
+        decorative_color = (235, 226, 217)
+        pygame.draw.rect(self.screen, decorative_color, (0, 0, self.width, 50))
+        pygame.draw.rect(self.screen, decorative_color, 
                         (0, self.height - 50, self.width, 50))
         
-        # Draw title and subtitle
-        self.title.draw(self.screen, center=True)
-        self.subtitle.draw(self.screen, center=True)
+        # Draw title (logo if available) and subtitle
+        if getattr(self, 'logo_sprite', None):
+            rect = self.logo_sprite.get_rect(center=(self.width // 2, self.logo_center_y))
+            self.screen.blit(self.logo_sprite, rect)
+        else:
+            if getattr(self, 'title', None) is not None:
+                self.title.y = self.logo_center_y
+                self.title.draw(self.screen, center=True)
         
         # Draw buttons
         self.play_button.draw(self.screen)

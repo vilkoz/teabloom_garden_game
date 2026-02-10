@@ -70,9 +70,9 @@ class ProceduralBackground:
 
         # Define layer templates and create blob surfaces for each layer
         templates = [
-            {"amplitude": 40, "freq": 1.2, "color": (170, 210, 160)},
-            {"amplitude": 70, "freq": 0.9, "color": (120, 190, 110)},
-            {"amplitude": 110, "freq": 0.6, "color": (80, 160, 80)},
+            {"amplitude": 40, "freq": 1.2, "color": (170, 123, 105)},
+            {"amplitude": 70, "freq": 0.9, "color": (181, 129, 123)},
+            {"amplitude": 110, "freq": 0.6, "color": (124, 60, 50)},
         ]
 
         self._layers = []

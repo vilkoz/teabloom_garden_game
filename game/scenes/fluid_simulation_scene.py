@@ -14,8 +14,8 @@ except ImportError as exc:  # pragma: no cover
     raise SystemExit("This simulation requires numpy. Please install it.") from exc
 
 
-WINDOW_WIDTH = 960
-WINDOW_HEIGHT = 720
+WINDOW_WIDTH = 1024
+WINDOW_HEIGHT = 768
 CELL_SIZE = 6
 GRID_W = WINDOW_WIDTH // CELL_SIZE
 GRID_H = WINDOW_HEIGHT // CELL_SIZE

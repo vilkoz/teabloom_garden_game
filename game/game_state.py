@@ -11,10 +11,11 @@ class GameState:
         
         # Load tea data to get defaults and unlock costs
         self.teas_data = self._load_teas_data()
+        self.cat_data = self._load_cats_data()
         
         # Set default unlocked teas from data
         self.unlocked_teas = [tea['id'] for tea in self.teas_data if tea.get('unlocked', False)]
-        self.unlocked_cats = ['mimi', 'luna', 'tofu']
+        self.unlocked_cats = [cat['id'] for cat in self.cat_data if cat.get('unlocked', False)]
         self.statistics = {
             'teas_served': 0,
             'cats_satisfied': 0,
@@ -42,6 +43,17 @@ class GameState:
                 return data.get('teas', []) if isinstance(data, dict) else data
         except Exception as e:
             print(f"Failed to load teas data: {e}")
+            return []
+
+    def _load_cats_data(self):
+        """Load cats data from JSON file"""
+        cats_path = Path(__file__).parent.parent / "data" / "cats_data.json"
+        try:
+            with open(cats_path, 'r') as f:
+                data = json.load(f)
+                return data.get('cats', []) if isinstance(data, dict) else data
+        except Exception as e:
+            print(f"Failed to load cats data: {e}")
             return []
     
     def add_hearts(self, amount):
@@ -109,19 +121,12 @@ class GameState:
             if unlock_cost > 0 and self.statistics['total_hearts'] >= unlock_cost:
                 if self.unlock_tea(tea['id']):
                     unlocks.append(('tea', tea['id']))
-        
-        # Cat unlocks
-        if self.statistics['correct_serves'] >= 20:
-            if self.unlock_cat('ginger'):
-                unlocks.append(('cat', 'ginger'))
-        
-        if self.statistics['total_hearts'] >= 50:
-            if self.unlock_cat('petya'):
-                unlocks.append(('cat', 'petya'))
-        
-        if self.statistics['total_hearts'] >= 100:
-            if self.unlock_cat('lapilaps'):
-                unlocks.append(('cat', 'lapilaps'))
+
+        for cat in self.cat_data:
+            unlock_cost = cat.get('unlock_requirement', 0)
+            if unlock_cost > 0 and self.statistics['total_hearts'] >= unlock_cost:
+                if self.unlock_cat(cat['id']):
+                    unlocks.append(('cat', cat['id']))
         
         return unlocks
     

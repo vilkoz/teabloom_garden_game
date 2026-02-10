@@ -2,7 +2,7 @@
   "cats": [
     {
       "id": "mimi",
-      "name": "Mimi",
+      "name": "Lera",
       "description": "Orange tabby, loves jasmine tea",
       "personality": "Friendly and energetic",
       "favorite_tea": "jasmine_oolong",
@@ -11,7 +11,7 @@
     },
     {
       "id": "luna",
-      "name": "Luna",
+      "name": "Danya",
       "description": "Black cat with white paws, loves te guan yin oolong tea",
       "personality": "Mysterious and elegant",
       "favorite_tea": "te_guan_yin",
@@ -20,7 +20,7 @@
     },
     {
       "id": "tofu",
-      "name": "Tofu",
+      "name": "Albina",
       "description": "White fluffy cat, loves white tea",
       "personality": "Shy and sweet",
       "favorite_tea": "silver_needle",
@@ -29,7 +29,7 @@
     },
     {
       "id": "ginger",
-      "name": "Ginger",
+      "name": "Vika",
       "description": "Calico, loves pu-erh tea",
       "personality": "Curious and playful",
       "favorite_tea": "leach_tears",
@@ -45,7 +45,8 @@
       "favorite_tea": "dualist_red",
       "unlocked": false,
       "unlock_requirement": 50,
-      "color": [128, 128, 128]
+      "color": [128, 128, 128],
+      "happy_popup_text": "A pashtet for me, please!"
     },
     {
       "id": "lapilaps",

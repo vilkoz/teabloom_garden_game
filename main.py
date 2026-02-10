@@ -19,7 +19,7 @@ class Game:
         self.width = 1024
         self.height = 768
         self.screen = pygame.display.set_mode((self.width, self.height))
-        pygame.display.set_caption("Tea Garden Cats 🐱🍵")
+        pygame.display.set_caption("Teabloom Garden 🐱🍵")
         
         # Clock for frame rate
         self.clock = pygame.time.Clock()

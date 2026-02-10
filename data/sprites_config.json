@@ -31,16 +31,16 @@
     "grid_cols": 1,
     "grid_rows": 1,
     "sprite_size": [
-      522,
-      322
+      322,
+      522
     ],
     "render_size": [
       300,
-      600
+      500
     ],
     "border_offset": [
-      251,
-      351
+      351,
+      251
     ],
     "grid_offset": [
       0,
@@ -609,6 +609,30 @@
     "grid_offset": [
       20,
       50
+    ]
+  },
+  {
+    "name": "logo",
+    "variants": [
+      "single"
+    ],
+    "grid_cols": 1,
+    "grid_rows": 1,
+    "sprite_size": [
+      899,
+      420
+    ],
+    "render_size": [
+      500,
+      233
+    ],
+    "border_offset": [
+      70,
+      305
+    ],
+    "grid_offset": [
+      0,
+      0
     ]
   }
 ]
