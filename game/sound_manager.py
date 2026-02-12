@@ -1,8 +1,10 @@
 """Sound manager for the game - handles all audio playback"""
+import os
 import pygame
 from pathlib import Path
 from typing import Optional, Dict
 from enum import Enum
+from .packaging import resource_path
 
 
 class SoundEffect(Enum):
@@ -58,7 +60,11 @@ class SoundManager:
         Args:
             sounds_dir: Directory containing sound files
         """
-        self.sounds_dir = Path(sounds_dir)
+        # Resolve sounds directory (handle PyInstaller bundles)
+        if os.path.isabs(sounds_dir):
+            self.sounds_dir = Path(sounds_dir)
+        else:
+            self.sounds_dir = Path(resource_path(sounds_dir))
         self.sounds: Dict[SoundEffect, pygame.mixer.Sound] = {}
         self.music: Dict[SoundEffect, pygame.mixer.Sound] = {}
         self.music_volume = 0.1

@@ -2,13 +2,23 @@
 import pygame
 import os
 from pathlib import Path
+from .packaging import resource_path
 
 
 class SpriteLoader:
     """Loads and manages sprite sheets from grid images"""
     
     def __init__(self, assets_dir="assets/images/grids"):
-        self.assets_dir = Path(assets_dir)
+        # Resolve assets directory for development and PyInstaller bundles
+        try:
+            from .packaging import resource_path
+            import os
+            if os.path.isabs(assets_dir):
+                self.assets_dir = Path(assets_dir)
+            else:
+                self.assets_dir = Path(resource_path(assets_dir))
+        except Exception:
+            self.assets_dir = Path(assets_dir)
         self.sprites = {}
         self.fallback_surfaces = {}
         
@@ -157,7 +167,7 @@ def get_sprite_loader():
     """Get the global sprite loader instance"""
     global _sprite_loader
     if _sprite_loader is None:
-        _sprite_loader = SpriteLoader()
+        _sprite_loader = SpriteLoader(resource_path("assets/images/grids"))
     return _sprite_loader
 
 
@@ -173,7 +183,7 @@ def load_all_game_sprites(message_callback=None):
     loader = get_sprite_loader()
     
     # Load sprite configuration
-    config_path = Path("data/sprites_config.json")
+    config_path = Path(resource_path("data/sprites_config.json"))
     try:
         with open(config_path, 'r') as f:
             sprites = json.load(f)

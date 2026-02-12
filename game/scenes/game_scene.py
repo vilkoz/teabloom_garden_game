@@ -11,6 +11,7 @@ from ..ui.tooltip import Tooltip
 from ..ui.petal_particle import PetalParticleSystem
 from ..ui.particle_system import ParticleSystem
 from ..ui.popup_notification import PopupNotification
+from ..packaging import resource_path
 
 
 class GameScene:
@@ -27,14 +28,14 @@ class GameScene:
         self.sound_manager = get_sound_manager()
         
         # Load tea data
-        with open('data/teas_data.json', 'r') as f:
+        with open(resource_path('data/teas_data.json'), 'r') as f:
             tea_data = json.load(f)
             self.all_teas = tea_data if isinstance(tea_data, list) else tea_data.get('teas', [])
             for tea in self.all_teas:
                 tea['brew_time'] = tea.get('brew_time', 5.0) * 1000.0  # Default brew time if not specified
         
         # Load cat data
-        with open('data/cats_data.json', 'r') as f:
+        with open(resource_path('data/cats_data.json'), 'r') as f:
             cat_data = json.load(f)
             self.all_cats = cat_data.get('cats', []) if isinstance(cat_data, dict) else cat_data
         

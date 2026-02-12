@@ -4,6 +4,7 @@ import json
 import sys
 from pathlib import Path
 from game.sprite_loader import get_sprite_loader, load_all_game_sprites
+from game.packaging import resource_path
 
 
 class SpriteViewer:
@@ -31,7 +32,7 @@ class SpriteViewer:
         self.font_small = pygame.font.Font(None, 18)
         
         # Load config
-        self.config_path = Path("data/sprites_config.json")
+        self.config_path = Path(resource_path("data/sprites_config.json"))
         self.sprites_config = self.load_config()
         
         # Load sprites
