@@ -51,9 +51,9 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: powershell
         run: |
-          uv run pyinstaller --noconfirm --clean --onefile \
-            --add-data "assets;assets" \
-            --add-data "data;data" \
+          uv run pyinstaller --noconfirm --clean --onefile `
+            --add-data "assets;assets" `
+            --add-data "data;data" `
             main.py
 
       - name: Upload artifacts
