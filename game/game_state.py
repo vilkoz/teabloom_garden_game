@@ -23,7 +23,9 @@ class GameState:
             'total_hearts': 0,
             'correct_serves': 0,
             'wrong_serves': 0,
-            'play_time': 0.0
+            'play_time': 0.0,
+            # internal flags
+            'title_shown': False,
         }
         self.current_combo = 0
         self.best_combo = 0

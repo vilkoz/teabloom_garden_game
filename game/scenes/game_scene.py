@@ -381,6 +381,16 @@ class GameScene:
             self.cat_spawn_timer = 0
             self._spawn_cat()
         
+        # If player reached the Valentine's threshold, switch to title scene
+        try:
+            total = self.game_state.statistics.get('total_hearts', 0)
+        except Exception:
+            total = 0
+        if total >= 120 and not self.game_state.statistics.get('title_shown'):
+            # Mark title shown so it won't re-trigger repeatedly
+            self.game_state.statistics['title_shown'] = True
+            return 'title'
+
         return None
     
     def draw(self):

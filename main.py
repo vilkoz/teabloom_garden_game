@@ -6,6 +6,7 @@ from game.scenes.menu_scene import MenuScene
 from game.scenes.game_scene import GameScene
 from game.scenes.stats_scene import StatsScene
 from game.scenes.loading_scene import LoadingScene
+from game.scenes.title_scene import TitleScene
 from game.sound_manager import get_sound_manager, SoundEffect
 
 
@@ -36,6 +37,11 @@ class Game:
         
         # Game state
         self.game_state = GameState()
+        # Ensure title_shown flag is reset at game start
+        try:
+            self.game_state.statistics['title_shown'] = False
+        except Exception:
+            pass
         
         # Scenes
         self.scenes = {
@@ -43,6 +49,7 @@ class Game:
             'menu': MenuScene(self.screen, self.game_state),
             'game': GameScene,
             'stats': StatsScene,
+            'title': TitleScene(self.screen, self.game_state),
         }
         
         self.current_scene = 'menu'
