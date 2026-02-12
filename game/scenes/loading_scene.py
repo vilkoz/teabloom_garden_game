@@ -86,7 +86,7 @@ class LoadingScene:
 
         # Title
         title_font = pygame.font.Font(None, 48)
-        title_text = title_font.render("Tea Garden Cats", True, (100, 70, 50))
+        title_text = title_font.render("Teabloom garden", True, (100, 70, 50))
         title_rect = title_text.get_rect(center=(self.width // 2, 80))
         self.screen.blit(title_text, title_rect)
 
@@ -99,6 +99,7 @@ class LoadingScene:
         # Messages
         message_font = pygame.font.Font(None, 20)
         start_y = 180
+        message_left = 80
         visible_messages = messages[-25:] if len(messages) > 25 else messages
 
         for i, msg in enumerate(visible_messages):
@@ -109,7 +110,7 @@ class LoadingScene:
                 color = (200, 100, 0)
 
             text_surface = message_font.render(msg, True, color)
-            text_rect = text_surface.get_rect(midtop=(self.width // 2, start_y + i * 22))
+            text_rect = text_surface.get_rect(topleft=(message_left, start_y + i * 22))
             self.screen.blit(text_surface, text_rect)
 
         # Update display
