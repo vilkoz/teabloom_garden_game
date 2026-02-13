@@ -17,9 +17,12 @@ class TitleScene:
         # Ukrainian default text (extensive)
         self.text = text or (
             "З Днем Валентина, моя маленька мапко (minimaps))!\n"
-            "Ти робиш моє серце теплим щоразу, коли ти поруч.\n"
-            "Дякую за сміх, за обійми і за всі маленькі моменти — вони для мене безцінні.\n"
-            "Нехай цей день буде наповнений цукерками, усмішками і мільйоном поцілунків для тебе."
+            "Як промені літнього сонця, ти робиш моє життя щасливим.\n"
+            "Дякую тобі за наші вечори, поїздки, чаювання, сміх,\n"
+            "за обійми і за всі маленькі моменти — вони для мене безцінні.\n"
+            "Нехай цей день буде наповнений прогулянками, слодощами\n"
+            "звісно чаєм, усмішками і мільйоном поцілунків для тебе.\n"
+            "Твій лапілапс."
         )
         self.font = pygame.font.Font(None, 40)
         self.small_font = pygame.font.Font(None, 28)
@@ -42,6 +45,9 @@ class TitleScene:
         # Local particle system for fireworks
         self.particle_system = ParticleSystem(self.sprite_loader)
         self.kiss_emoji = load_emoji("💋", size=42)
+        self.heart_emoji = load_emoji("❤️", size=256)
+        self.frog_emoji = load_emoji("🐸", size=64)
+        self.wolf_emoji = load_emoji("🐺", size=64)
         self.heart_surface = None  # created on first draw based on envelope size
         self.paper_pos = [self.width // 2, self.height // 2]
         self.paper_scale = 0.85
@@ -187,10 +193,10 @@ class TitleScene:
         # If paper is visible, anchor text to its top; otherwise use envelope
         if paper_visible:
             base_y_for_text = surf_rect.top + 30
-            base_x_for_text = surf_rect.left + padding
+            base_x_for_text = surf_rect.left + padding // 2
         else:
             base_y_for_text = env_y + padding
-            base_x_for_text = env_x + padding
+            base_x_for_text = env_x + padding // 2
         y = base_y_for_text
         for line in lines:
             # wrap long lines
@@ -199,7 +205,7 @@ class TitleScene:
             self.screen.blit(text_surf, text_rect)
             y += text_rect.height + 6
         if self.kiss_ready and self.kiss_emoji:
-            kiss_rect = self.kiss_emoji.get_rect(topleft=(base_x_for_text, y + 6))
+            kiss_rect = self.kiss_emoji.get_rect(topleft=(base_x_for_text + 200, y - 40))
             self.screen.blit(self.kiss_emoji, kiss_rect)
         # draw buttons
         for rect, label, action in self.buttons:
@@ -236,6 +242,9 @@ class TitleScene:
             (cx + size, cy - top_offset),
         ]
         pygame.draw.polygon(surf, heart_color, points)
+        wolf_size = self.wolf_emoji.get_width()
+        wolf_rect = self.wolf_emoji.get_rect(center=(cx, cy + wolf_size // 2))
+        surf.blit(self.wolf_emoji, wolf_rect)
         return surf
 
     def _wrap_lines(self, text, font, max_width):
