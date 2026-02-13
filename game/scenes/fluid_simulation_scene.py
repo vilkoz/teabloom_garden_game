@@ -2,6 +2,7 @@ import math
 import os
 import random
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from typing import List, Tuple
@@ -9,6 +10,9 @@ from typing import List, Tuple
 import pygame
 
 try:
+    os.environ.setdefault("OMP_NUM_THREADS", "1")
+    os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+    os.environ.setdefault("MKL_NUM_THREADS", "1")
     import numpy as np
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("This simulation requires numpy. Please install it.") from exc
@@ -86,10 +90,11 @@ class WaterParticle:
 
 
 class FluidSimulation:
-    def __init__(self, grid_w: int, grid_h: int):
+    def __init__(self, grid_w: int, grid_h: int, enable_dye: bool = True):
         self.grid_w = grid_w
         self.grid_h = grid_h
         self.inv_cell = 1.0 / CELL_SIZE
+        self.enable_dye = enable_dye
 
         self.u = np.zeros((grid_h, grid_w), dtype=np.float32)
         self.v = np.zeros((grid_h, grid_w), dtype=np.float32)
@@ -115,6 +120,16 @@ class FluidSimulation:
         self._particle_bucket_size = max(2, PARTICLE_RADIUS * 2)
         self._leaf_buckets: dict[Tuple[int, int], List[int]] = {}
         self._leaf_bucket_size = max(4, LEAF_RADIUS * 2)
+
+        # profiling buffers (bounded)
+        self._prof = {
+            "particles": [],
+            "rebuild": [],
+            "advect": [],
+            "diffuse": [],
+            "apply_bounds": [],
+            "leaves": [],
+        }
 
         workers = max(2, (os.cpu_count() or 4) - 1)
         self.executor = ThreadPoolExecutor(max_workers=workers)
@@ -153,38 +168,51 @@ class FluidSimulation:
                 )
 
     def step(self, dt: float) -> None:
+        t0 = time.perf_counter()
         self._step_particles(dt)
+        t1 = time.perf_counter()
+
         self._rebuild_velocity_and_water()
+        t2 = time.perf_counter()
 
         self._water_next[:, :] = self.water
-        self._advect_field(self.dye, self._dye_next, dt)
+        if self.enable_dye:
+            self._advect_field(self.dye, self._dye_next, dt)
+            t3 = time.perf_counter()
 
-        self._diffuse_inplace(self._water_next, DIFFUSE_WATER)
-        self._diffuse_inplace(self._dye_next, DIFFUSE_DYE)
+            self._diffuse_inplace(self._water_next, DIFFUSE_WATER)
+            self._diffuse_inplace(self._dye_next, DIFFUSE_DYE)
+            t4 = time.perf_counter()
 
-        self._dye_next *= DYE_DECAY
-        self.water[:, :] = self._water_next
-        self.dye[:, :] = self._dye_next
+            self._dye_next *= DYE_DECAY
+            self.water[:, :] = self._water_next
+            self.dye[:, :] = self._dye_next
+        else:
+            t3 = time.perf_counter()
+            t4 = t3
+            self.water[:, :] = self._water_next
+            self.dye.fill(0.0)
 
         self._apply_cup_bounds()
+        t5 = time.perf_counter()
 
         self._update_leaves(dt)
+        t6 = time.perf_counter()
+
+        self._record_profile(
+            {
+                "particles": t1 - t0,
+                "rebuild": t2 - t1,
+                "advect": t3 - t2,
+                "diffuse": t4 - t3,
+                "apply_bounds": t5 - t4,
+                "leaves": t6 - t5,
+            }
+        )
 
     def _advect_field(self, src: np.ndarray, dst: np.ndarray, dt: float) -> None:
-        rows = self.grid_h
-        chunk = max(8, rows // (os.cpu_count() or 4))
-        futures = []
-
-        for y0 in range(0, rows, chunk):
-            y1 = min(rows, y0 + chunk)
-            futures.append(
-                self.executor.submit(
-                    self._advect_chunk, src, dst, y0, y1, dt
-                )
-            )
-
-        for future in futures:
-            future.result()
+        # single-chunk advect to avoid thread pool overhead on a modest grid
+        self._advect_chunk(src, dst, 0, self.grid_h, dt)
 
     def _advect_chunk(
         self, src: np.ndarray, dst: np.ndarray, y0: int, y1: int, dt: float
@@ -489,6 +517,24 @@ class FluidSimulation:
         self.u *= self.cup_mask
         self.v *= self.cup_mask
 
+    def _record_profile(self, durations: dict[str, float]) -> None:
+        # keep last ~300 samples per bucket
+        for key, val in durations.items():
+            buf = self._prof.get(key)
+            if buf is None:
+                continue
+            buf.append(val)
+            if len(buf) > 300:
+                buf.pop(0)
+
+    def profile_stats(self) -> dict[str, tuple[float, float, float]]:
+        def stats(buf: list[float]):
+            if not buf:
+                return (0.0, 0.0, 0.0)
+            return (min(buf), sum(buf) / len(buf), max(buf))
+
+        return {k: stats(v) for k, v in self._prof.items()}
+
     def _clamp_leaf_to_cup(self, leaf: LeafParticle) -> None:
         # clamp leaf to circular interior
         dx = leaf.x - self.cup_cx
@@ -584,12 +630,12 @@ class FluidSimulationScene:
     other scene classes in the project.
     """
 
-    def __init__(self, screen: pygame.Surface):
+    def __init__(self, screen: pygame.Surface, enable_dye: bool = True):
         self.screen = screen
         self.width = screen.get_width()
         self.height = screen.get_height()
 
-        self.sim = FluidSimulation(GRID_W, GRID_H)
+        self.sim = FluidSimulation(GRID_W, GRID_H, enable_dye=enable_dye)
         self.renderer = FluidRenderer(self.sim)
 
         # precompute pour grid position at the cup rim
