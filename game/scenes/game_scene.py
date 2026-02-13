@@ -54,8 +54,7 @@ class GameScene:
         # Cat visiting area (center-right)
         self.cat_visitors = []
         self.cat_spawn_timer = 0
-        #self.cat_spawn_interval = 30000  # 30 seconds
-        self.cat_spawn_interval = 3000  # 30 seconds
+        self.cat_spawn_interval = 10000  # 10 seconds
         
         # Dragging state
         self.dragging_object = None

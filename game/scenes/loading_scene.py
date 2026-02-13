@@ -43,10 +43,8 @@ class LoadingScene:
         t = threading.Thread(target=loader, daemon=True)
         t.start()
 
-        # main loop: update simulation and draw overlay until loader finishes
-        waiting_for_key = False
         while True:
-            dt = self.clock.tick(60) / 1000.0
+            dt = self.clock.tick(60)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -60,25 +58,13 @@ class LoadingScene:
                         t.join()
                         return
 
-            # update and draw simulation in background
-            self.sim_scene.update(dt)
+            # draw static simulation background
             self.sim_scene.draw()
 
             # draw messages overlay
             with self._lock:
                 msgs = list(self._messages)
             self._draw_loading_screen(msgs)
-
-    def _wait_for_input(self):
-        waiting = True
-        while waiting:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
-                    waiting = False
-            self.clock.tick(30)
 
     def _draw_loading_screen(self, messages):
         # Background
@@ -115,9 +101,3 @@ class LoadingScene:
 
         # Update display
         pygame.display.flip()
-
-        # Process events to avoid freezing
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
