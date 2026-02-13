@@ -40,7 +40,7 @@ jobs:
 
       - name: Install PyInstaller into uv env
         run: |
-          uv pip install pyinstaller
+          uv run python -m pip install pyinstaller
 
       - name: Build on macOS
         if: matrix.os == 'macos-latest'
@@ -57,11 +57,8 @@ jobs:
         shell: powershell
         run: |
           $icon = ''
-          if (Test-Path assets\icon.ico) { $icon = '--icon assets/icon.ico' }
-          uv run pyinstaller --noconfirm --clean --windowed --name "Teabloom Garden" $icon `
-            --add-data "assets;assets" `
-            --add-data "data;data" `
-            main.py
+          if (Test-Path 'assets\icon.ico') { $icon = '--icon assets/icon.ico' }
+          uv run pyinstaller --noconfirm --clean --windowed --name "Teabloom Garden" $icon --add-data "assets;assets" --add-data "data;data" main.py
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
