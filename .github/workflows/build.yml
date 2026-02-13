@@ -42,7 +42,9 @@ jobs:
       - name: Build on macOS
         if: matrix.os == 'macos-latest'
         run: |
-          uv run pyinstaller --noconfirm --clean --onefile \
+          ICON=""
+          if [ -f assets/icon.icns ]; then ICON="--icon assets/icon.icns"; fi
+          uv run pyinstaller --noconfirm --clean --windowed --name "Teabloom Garden" $ICON \
             --add-data "assets:assets" \
             --add-data "data:data" \
             main.py
@@ -51,9 +53,11 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: powershell
         run: |
-          uv run pyinstaller --noconfirm --clean --onefile \
-            --add-data "assets;assets" \
-            --add-data "data;data" \
+          $icon = ''
+          if (Test-Path assets\icon.ico) { $icon = '--icon assets/icon.ico' }
+          uv run pyinstaller --noconfirm --clean --windowed --name "Teabloom Garden" $icon `
+            --add-data "assets;assets" `
+            --add-data "data;data" `
             main.py
 
       - name: Upload artifacts
