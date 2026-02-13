@@ -52,9 +52,10 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: powershell
         run: |
-          $icon = ''
-          if (Test-Path 'assets\icon.ico') { $icon = '--icon assets/icon.ico' }
-          uv run pyinstaller --noconfirm --clean --windowed --name "Teabloom Garden" $icon --add-data "assets;assets" --add-data "data;data" main.py
+          $args = @('--noconfirm','--clean','--windowed','--name','Teabloom Garden','--add-data','assets;assets','--add-data','data;data')
+          if (Test-Path 'assets\icon.ico') { $args += '-i'; $args += 'assets/icon.ico' }
+          $args += 'main.py'
+          uv run pyinstaller @args
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
