@@ -6,7 +6,7 @@ rm -rf build dist *.spec
 
 # On macOS and Linux the add-data separator is ':'
 # Build a macOS .app bundle (GUI) instead of a single-file executable
-uv run pyinstaller --noconfirm --clean --windowed --name "Teabloom Garden" \
+uv run pyinstaller --noconfirm --clean --windowed --name "Teabloom Garden" -i assets/icon.icns \
   --add-data "assets:assets" \
   --add-data "data:data" \
   main.py

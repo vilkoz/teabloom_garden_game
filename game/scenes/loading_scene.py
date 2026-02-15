@@ -59,6 +59,7 @@ class LoadingScene:
                         return
 
             # draw static simulation background
+            self.sim_scene.update(dt / 1000.0)
             self.sim_scene.draw()
 
             # draw messages overlay
