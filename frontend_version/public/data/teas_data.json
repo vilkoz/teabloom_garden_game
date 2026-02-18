@@ -1,0 +1,108 @@
+{
+  "teas": [
+    {
+      "id": "jasmine_oolong",
+      "name": "Jasmine Oolong",
+      "category": "oolong",
+      "brew_time": 3.0,
+      "heart_value": 1,
+      "rarity": "common",
+      "unlocked": true,
+      "unlock_cost": 0,
+      "color": [144, 238, 144]
+    },
+    {
+      "id": "te_guan_yin",
+      "name": "Te Guan Yin Oolong",
+      "category": "oolong",
+      "brew_time": 3.0,
+      "heart_value": 1,
+      "rarity": "common",
+      "unlocked": true,
+      "unlock_cost": 0,
+      "color": [152, 251, 152]
+    },
+    {
+      "id": "silver_needle",
+      "name": "Silver Needle White Tea",
+      "category": "white_tea",
+      "brew_time": 2.0,
+      "heart_value": 1,
+      "rarity": "common",
+      "unlocked": true,
+      "unlock_cost": 0,
+      "color": [245, 245, 220]
+    },
+    {
+      "id": "dan_tsun",
+      "name": "Dan Tsun Oolong",
+      "category": "oolong",
+      "brew_time": 3.0,
+      "heart_value": 2,
+      "rarity": "uncommon",
+      "unlocked": false,
+      "unlock_cost": 5,
+      "color": [189, 183, 107]
+    },
+    {
+      "id": "violet_ya_bao",
+      "name": "Violet Ya Bao",
+      "category": "white_tea",
+      "brew_time": 2.0,
+      "heart_value": 2,
+      "rarity": "uncommon",
+      "unlocked": false,
+      "unlock_cost": 15,
+      "color": [221, 160, 221]
+    },
+    {
+      "id": "dualist_red",
+      "name": "Dualist Red Tea",
+      "category": "red_tea",
+      "brew_time": 4.0,
+      "heart_value": 2,
+      "rarity": "uncommon",
+      "unlocked": false,
+      "unlock_cost": 30,
+      "color": [178, 34, 34]
+    },
+    {
+      "id": "leach_tears",
+      "name": "Leach Tears Ripe Pu-erh",
+      "category": "ripe_puerh",
+      "brew_time": 4.0,
+      "heart_value": 3,
+      "rarity": "rare",
+      "unlocked": false,
+      "unlock_cost": 50,
+      "color": [139, 69, 19]
+    }
+  ],
+  "categories": {
+    "red_tea": {
+      "name": "Red Tea",
+      "brew_time": 4.0,
+      "description": "Oxidized black teas"
+    },
+    "oolong": {
+      "name": "Oolong",
+      "brew_time": 3.0,
+      "description": "Semi-oxidized"
+    },
+    "white_tea": {
+      "name": "White Tea",
+      "brew_time": 2.0,
+      "description": "Minimal processing"
+    },
+    "raw_puerh": {
+      "name": "Raw Pu-erh",
+      "brew_time": 3.0,
+      "description": "Unfermented"
+    },
+    "ripe_puerh": {
+      "name": "Ripe Pu-erh",
+      "brew_time": 4.0,
+      "description": "Fermented"
+    }
+  }
+}
