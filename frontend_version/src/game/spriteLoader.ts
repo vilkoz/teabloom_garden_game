@@ -1,4 +1,5 @@
 import type { SpriteConfig } from './types';
+import { appUrl } from './paths';
 
 type SpriteMap = Map<string, Map<string, HTMLCanvasElement>>;
 
@@ -63,7 +64,7 @@ export class SpriteLoader {
   }
 
   private async loadGrid(cfg: SpriteConfig, messageCallback?: (message: string) => void): Promise<void> {
-    const imageUrl = `/assets/images/grids/${cfg.name}_grid.png`;
+    const imageUrl = appUrl(`assets/images/grids/${cfg.name}_grid.png`);
     const [spriteWidth, spriteHeight] = cfg.sprite_size;
     const [renderWidth, renderHeight] = cfg.render_size ?? cfg.sprite_size;
 

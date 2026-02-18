@@ -1,10 +1,11 @@
 import type { AssetBundle, CatDataFile, GameData, TeaDataFile } from './types';
+import { appUrl } from './paths';
 
 export async function loadGameData(): Promise<GameData & AssetBundle> {
   const [teasResponse, catsResponse, spritesResponse] = await Promise.all([
-    fetch('/data/teas_data.json'),
-    fetch('/data/cats_data.json'),
-    fetch('/data/sprites_config.json'),
+    fetch(appUrl('data/teas_data.json')),
+    fetch(appUrl('data/cats_data.json')),
+    fetch(appUrl('data/sprites_config.json')),
   ]);
 
   if (!teasResponse.ok) {

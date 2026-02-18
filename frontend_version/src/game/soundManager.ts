@@ -1,3 +1,5 @@
+import { appUrl } from './paths';
+
 export const SoundEffect = {
   BUTTON_CLICK: 'button_click.wav',
   BUTTON_HOVER: 'button_hover.mp3',
@@ -135,7 +137,7 @@ export class SoundManager {
     const candidates = [primary, ...(FALLBACK_BY_KEY[key] ?? [])];
 
     for (const filename of candidates) {
-      const url = `/assets/sounds/${filename}`;
+      const url = appUrl(`assets/sounds/${filename}`);
       try {
         const response = await fetch(url, { method: 'HEAD' });
         if (response.ok) {
